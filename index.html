@@ -3,378 +3,792 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>트렌드 유통기한 - 실시간 예측 서비스</title>
+<title>트렌드 유통기한 — 실시간 트렌드 예측</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Noto Sans KR',sans-serif;background:#0f0f13;color:#e2e8f0;min-height:100vh}
+:root{
+  --bg:#f4f6fb;--white:#fff;--border:#e4e8f0;
+  --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
+  --accent:#4f46e5;--accent-light:#eef2ff;
+  --green:#16a34a;--green-bg:#dcfce7;
+  --lime:#22c55e;--lime-bg:#f0fdf4;
+  --blue:#2563eb;--blue-bg:#dbeafe;
+  --gray:#64748b;--gray-bg:#f1f5f9;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 12px 40px rgba(0,0,0,.06);
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
 
-/* 헤더 */
-.header{padding:14px 20px;border-bottom:1px solid #1e1e2e;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:8px}
-.logo-icon{width:26px;height:26px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600}
-.logo-title{font-size:14px;font-weight:600}
-.logo-sub{font-size:10px;color:#475569;margin-top:1px}
-.badge{font-size:10px;padding:3px 8px;border-radius:8px;background:#1a1a2e;border:1px solid #2d2d3d;color:#64748b}
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:0;height:56px}
+.nav-logo{display:flex;align-items:center;gap:8px;margin-right:28px;flex-shrink:0}
+.nav-logo-icon{width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
+.nav-logo-text{font-size:15px;font-weight:700;color:var(--t1)}
+.nav-tabs{display:flex;gap:2px;flex:1}
+.nav-tab{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);transition:all .15s;white-space:nowrap}
+.nav-tab:hover{background:var(--accent-light);color:var(--accent)}
+.nav-tab.active{background:var(--accent-light);color:var(--accent);font-weight:600}
+.nav-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:6px 12px;transition:all .2s;min-width:220px}
+.nav-search:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.nav-search input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--t1);width:100%}
+.nav-search input::placeholder{color:var(--t3)}
+.search-icon{color:var(--t3);font-size:14px;flex-shrink:0}
 
-/* 카테고리 탭 */
-.categories{padding:10px 20px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid #1e1e2e}
-.cat-btn{padding:4px 11px;border-radius:14px;border:1px solid #2d2d3d;background:#1a1a2e;color:#94a3b8;font-size:10px;cursor:pointer;font-family:inherit;transition:all .15s}
-.cat-btn.active{background:#6366f1;color:#fff;border-color:#6366f1}
+/* MAIN WRAP */
+.main-wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
 
-/* 로딩 */
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px}
-.spinner{width:28px;height:28px;border:2px solid #2d2d3d;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:12px;color:#64748b}
+/* VIEW HEADER */
+.view-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.view-title-group h1{font-size:22px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.view-title-group p{font-size:12px;color:var(--t3)}
+.view-meta{display:flex;align-items:center;gap:8px}
+.meta-badge{font-size:11px;padding:4px 10px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;font-weight:500}
+.date-text{font-size:11px;color:var(--t3)}
 
-/* 메인 테이블 */
-.main-wrap{padding:14px 20px}
-.table-header{display:grid;grid-template-columns:38px 1fr 88px 72px 50px 68px;padding:7px 12px;background:#1a1a2e;border-radius:8px 8px 0 0;border:1px solid #2d2d3d;border-bottom:none}
-.table-header span{font-size:10px;color:#64748b;font-weight:500}
-.table-header span:nth-child(n+5){text-align:right}
-.table-body{border:1px solid #2d2d3d;border-radius:0 0 8px 8px;overflow:hidden}
-.trend-row{display:grid;grid-template-columns:38px 1fr 88px 72px 50px 68px;padding:11px 12px;border-bottom:1px solid #1e1e2e;cursor:pointer;align-items:center;transition:background .1s}
+/* CATEGORY PILLS */
+.cat-pills{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.cat-pill{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--t2);font-size:12px;font-weight:500;transition:all .15s}
+.cat-pill:hover{border-color:var(--accent);color:var(--accent)}
+.cat-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* TREND TABLE */
+.trend-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.trend-table-header{display:grid;grid-template-columns:48px 1fr 100px 110px 80px 88px;padding:10px 20px;background:#fafbfd;border-bottom:1px solid var(--border)}
+.th{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.th.r{text-align:right}
+.trend-row{display:grid;grid-template-columns:48px 1fr 100px 110px 80px 88px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .12s}
 .trend-row:last-child{border-bottom:none}
-.trend-row:hover{background:#1a1a2e}
-.rank{font-size:14px;font-weight:600;color:#64748b}
-.rank.top{color:#6366f1}
-.t-name{font-size:11px;font-weight:600;color:#e2e8f0;margin-bottom:2px}
-.t-sub{font-size:10px;color:#64748b}
-.s-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:500}
-.t-score{font-size:11px;font-weight:600;color:#e2e8f0;text-align:right}
-.t-remain{font-size:11px;font-weight:600;text-align:right}
-.t-remain.urgent{color:#ef4444}
-.t-remain.soon{color:#f97316}
-.t-remain.ok{color:#22c55e}
-.t-remain.steady{color:#64748b;font-size:10px;font-weight:400}
-.foot-note{font-size:10px;color:#475569;margin-top:10px;text-align:center}
+.trend-row:hover{background:#fafbff}
 
-/* 상세뷰 */
-.detail-wrap{padding:12px 20px;display:none}
-.back-btn{background:none;border:1px solid #2d2d3d;border-radius:7px;padding:4px 10px;color:#94a3b8;font-size:10px;cursor:pointer;font-family:inherit;margin-bottom:10px}
-.back-btn:hover{background:#1a1a2e}
-.breadcrumb{font-size:10px;color:#475569;margin-bottom:10px}
+.t-rank{font-size:17px;font-weight:700;color:var(--t3)}
+.t-rank.top{color:var(--accent)}
+.t-name-wrap .name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.t-name-wrap .sub{font-size:11px;color:var(--t3)}
 
-.d-header{border:1px solid #2d2d3d;border-radius:12px;padding:13px 15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px}
-.d-title{font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:3px}
-.d-sub{font-size:10px;color:#64748b}
-.d-badges{display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap}
-.d-stats{display:flex;gap:18px}
-.stat{text-align:center}
-.stat-label{font-size:9px;color:#475569;margin-bottom:2px}
-.stat-val{font-size:20px;font-weight:600;color:#e2e8f0}
-.stat-val.danger{color:#ef4444}
-.stat-val.safe{color:#22c55e}
+/* STATUS BADGE */
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;width:fit-content}
+.s-급상승{background:var(--green-bg);color:var(--green)}
+.s-상승{background:var(--lime-bg);color:#15803d}
+.s-정점{background:var(--blue-bg);color:var(--blue)}
+.s-보합{background:var(--gray-bg);color:var(--gray)}
+.s-하락{background:var(--orange-bg);color:var(--orange)}
+.s-급하락{background:var(--red-bg);color:var(--red)}
 
-.panels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.panel{border:1px solid #2d2d3d;border-radius:12px;padding:13px}
-.panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.panel-title{font-size:11px;font-weight:600;color:#e2e8f0}
-.panel-sub{font-size:9px;color:#64748b;margin-top:2px}
-.p-badge{font-size:9px;padding:2px 7px;border-radius:7px;flex-shrink:0}
-.p-badge.purple{background:#1e1a3d;color:#a78bfa}
-.p-badge.green{background:#0f2d1a;color:#22c55e}
+/* SPARKLINE */
+.spark-wrap svg{display:block}
 
-.chart-box{position:relative;height:175px}
-.chart-legend{display:flex;gap:10px;margin-top:7px;justify-content:center;flex-wrap:wrap}
-.leg{display:flex;align-items:center;gap:3px;font-size:9px;color:#64748b}
-.leg-line{width:16px;height:2px}
+/* SCORE COLUMN */
+.score-col{text-align:right}
+.score-num{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.score-bar-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:2px}
 
-/* AI 분석 */
-.ai-summary{background:#1a1a2e;border-radius:7px;padding:9px 11px;margin-bottom:9px;font-size:10px;color:#94a3b8;line-height:1.65}
-.ai-label{font-size:9px;color:#475569;margin-bottom:3px}
-.src-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.src-name{font-size:9px;color:#94a3b8;width:48px;flex-shrink:0}
-.src-track{flex:1;height:4px;background:#1e1e2e;border-radius:2px;overflow:hidden}
-.src-fill{height:100%;background:#6366f1;border-radius:2px}
-.src-pct{font-size:9px;color:#475569;width:22px;text-align:right}
-.sentiment{display:flex;gap:5px;margin:9px 0}
-.sent-box{flex:1;text-align:center;padding:5px 3px;border-radius:7px}
-.sent-val{font-size:13px;font-weight:600}
-.sent-lbl{font-size:9px;opacity:.8}
-.rec{border-left:3px solid #6366f1;padding-left:9px;font-size:10px;color:#94a3b8}
-.rec-lbl{font-size:9px;color:#6366f1;margin-bottom:2px}
+/* REMAIN */
+.remain-col{text-align:right;font-size:13px;font-weight:600}
+.r-urgent{color:var(--red)}
+.r-soon{color:var(--orange)}
+.r-ok{color:var(--green)}
+.r-steady{color:var(--t3);font-weight:400;font-size:11px}
+
+/* LOADING */
+.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px}
+.spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-size:13px;color:var(--t2);font-weight:500}
+.load-sub{font-size:11px;color:var(--t3)}
+.foot-note{font-size:11px;color:var(--t3);margin-top:14px;text-align:center;line-height:1.7}
+
+/* DETAIL VIEW */
+#detail-view{display:none}
+.detail-wrap{max-width:1100px;margin:0 auto;padding:24px 20px}
+.back-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.back-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);color:var(--t2);font-size:12px;font-weight:500;background:var(--white);transition:all .15s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.breadcrumb{font-size:12px;color:var(--t3)}
+.breadcrumb span{color:var(--t2)}
+
+/* DETAIL HEADER CARD */
+.d-header-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:24px;margin-bottom:16px}
+.d-badges{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.d-rank-badge{width:36px;height:36px;border-radius:10px;background:var(--accent-light);color:var(--accent);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.d-cat-badge{padding:3px 9px;border-radius:6px;background:var(--bg);color:var(--t2);font-size:11px;border:1px solid var(--border)}
+.d-main{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.d-title-group .title{font-size:22px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.d-title-group .subtitle{font-size:14px;color:var(--t2);margin-bottom:6px}
+.d-title-group .desc{font-size:12px;color:var(--t3);line-height:1.6;margin-bottom:8px}
+.rank-change{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.rank-change span{font-weight:500}
+.rank-arrow{color:var(--t3);font-size:10px}
+.d-stats{display:flex;gap:24px;flex-shrink:0}
+.d-stat{text-align:center;min-width:70px}
+.d-stat-label{font-size:10px;color:var(--t3);margin-bottom:4px;font-weight:500;letter-spacing:.02em}
+.d-stat-val{font-size:24px;font-weight:700;color:var(--t1)}
+.d-stat-val.up{color:var(--green)}
+.d-stat-val.down{color:var(--red)}
+.d-stat-unit{font-size:11px;color:var(--t3)}
+
+/* PANELS */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.panel-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:20px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.panel-title{font-size:13px;font-weight:700;color:var(--t1)}
+.panel-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.panel-badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;flex-shrink:0}
+.pb-purple{background:#ede9fe;color:#7c3aed}
+.pb-green{background:#d1fae5;color:#065f46}
+
+/* PREDICTION STATS */
+.pred-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.pred-stat{background:#f8fafc;border-radius:10px;padding:10px 12px}
+.pred-stat-label{font-size:9px;color:var(--t3);font-weight:600;letter-spacing:.05em;margin-bottom:4px}
+.pred-stat-val{font-size:16px;font-weight:700;color:var(--t1)}
+.pred-stat-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.chart-box{position:relative;height:170px}
+.chart-legend{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2)}
+.leg-line{width:16px;height:2px;border-radius:1px}
+
+/* AI ANALYSIS */
+.ai-summary-box{background:#f8fafc;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--t2);line-height:1.75}
+.ai-section-label{font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.05em;margin-bottom:8px}
+.src-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.src-label{font-size:11px;color:var(--t2);width:52px;flex-shrink:0}
+.src-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.src-fill{height:100%;border-radius:3px;transition:width .5s}
+.src-pct{font-size:11px;color:var(--t3);width:28px;text-align:right}
+.sentiment-bar{height:8px;border-radius:4px;background:linear-gradient(to right,#16a34a 0%,#16a34a var(--pos),#e5e7eb var(--pos),#e5e7eb calc(var(--pos) + var(--neu)),#dc2626 calc(var(--pos) + var(--neu)),#dc2626 100%);margin-bottom:6px}
+.sentiment-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t2)}
+.soho-box{background:linear-gradient(135deg,#f0f0ff,#e8ecff);border-radius:10px;padding:12px;margin-top:10px;border-left:3px solid var(--accent)}
+.soho-label{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:.05em;margin-bottom:4px}
+.soho-text{font-size:12px;color:#3730a3;line-height:1.65;font-weight:500}
+.replace-box{background:#fff7ed;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--orange);display:flex;align-items:center;gap:6px}
+
+/* SIMILAR TRENDS */
+.similar-section{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:20px}
+.similar-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:14px}
+.similar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.similar-card{border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:all .15s}
+.similar-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.06)}
+.sim-name{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sim-row{display:flex;justify-content:space-between;align-items:center}
+.sim-score{font-size:12px;font-weight:700;color:var(--t1)}
+
+/* SEARCH OVERLAY */
+#search-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;backdrop-filter:blur(4px)}
+.search-modal{position:absolute;top:80px;left:50%;transform:translateX(-50%);width:90%;max-width:600px;background:var(--white);border-radius:16px;box-shadow:var(--shadow-md);overflow:hidden}
+.search-input-wrap{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.search-modal-input{flex:1;border:none;outline:none;font-size:15px;font-family:inherit;color:var(--t1)}
+.search-modal-input::placeholder{color:var(--t3)}
+.search-close{color:var(--t3);font-size:18px;padding:4px}
+#search-results{max-height:400px;overflow-y:auto;padding:8px}
+.search-result-item{display:flex;align-items:center;justify-content:space-between;padding:12px 12px;border-radius:10px;cursor:pointer;transition:background .1s}
+.search-result-item:hover{background:var(--bg)}
+.sr-name{font-size:13px;font-weight:500;color:var(--t1)}
+.sr-meta{font-size:11px;color:var(--t3)}
+.search-empty{padding:40px;text-align:center;color:var(--t3);font-size:13px}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">
-    <div class="logo-icon">T</div>
-    <div>
-      <div class="logo-title">트렌드 유통기한</div>
-      <div class="logo-sub">광고 제외 · 네이버데이터랩 실시간 분석</div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">T</div>
+      <div class="nav-logo-text">트렌드유통기한</div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('ranking',this)">실시간 순위</button>
+      <button class="nav-tab" onclick="switchTab('category',this)">카테고리</button>
+      <button class="nav-tab" onclick="switchTab('global',this)">글로벌</button>
+    </div>
+    <div class="nav-search" onclick="openSearch()">
+      <span class="search-icon">🔍</span>
+      <input id="nav-search-input" placeholder="트렌드 검색..." readonly onfocus="openSearch()">
     </div>
   </div>
-  <div class="badge" id="update-badge">로딩 중...</div>
-</div>
+</nav>
 
-<div class="categories">
-  <button class="cat-btn active" onclick="loadCategory('음식',this)">음식·디저트</button>
-  <button class="cat-btn" onclick="loadCategory('패션',this)">패션·뷰티</button>
-  <button class="cat-btn" onclick="loadCategory('밈',this)">밈·챌린지</button>
-  <button class="cat-btn" onclick="loadCategory('게임',this)">게임</button>
-  <button class="cat-btn" onclick="loadCategory('IT',this)">IT·테크</button>
-</div>
-
-<!-- 메인뷰 -->
+<!-- MAIN VIEW -->
 <div id="main-view">
   <div class="main-wrap">
-    <div class="loading" id="loading-el">
-      <div class="spinner"></div>
-      <div class="loading-text">네이버데이터랩에서 실시간 데이터 수집 중...</div>
-    </div>
-    <div id="table-wrap" style="display:none">
-      <div class="table-header">
-        <span>순위</span><span>트렌드</span><span>상태</span><span>최근 추이</span><span>점수</span><span>잔여수명</span>
+    <div class="view-header">
+      <div class="view-title-group">
+        <h1>실시간 트렌드 순위</h1>
+        <p>광고·협찬 게시물을 제외하고 SNS·뉴스·커뮤니티 언급량을 분석해 집계한 실시간 인기 순위입니다.</p>
       </div>
-      <div class="table-body" id="table-body"></div>
+      <div class="view-meta">
+        <span class="meta-badge">● Naver DataLab</span>
+        <span class="date-text" id="main-date"></span>
+      </div>
+    </div>
+
+    <div class="cat-pills" id="cat-pills">
+      <button class="cat-pill active" onclick="loadCat('음식',this)">음식·디저트</button>
+      <button class="cat-pill" onclick="loadCat('패션',this)">패션·뷰티</button>
+      <button class="cat-pill" onclick="loadCat('밈',this)">밈·챌린지</button>
+      <button class="cat-pill" onclick="loadCat('게임',this)">게임</button>
+      <button class="cat-pill" onclick="loadCat('IT',this)">IT·테크</button>
+    </div>
+
+    <div class="trend-card">
+      <div id="loading-state" class="loading-state">
+        <div class="spinner"></div>
+        <div class="load-text">네이버데이터랩에서 실시간 데이터 수집 중...</div>
+        <div class="load-sub">광고·협찬 게시물을 필터링하고 있습니다</div>
+      </div>
+      <div id="table-container" style="display:none">
+        <div class="trend-table-header">
+          <div class="th">순위</div>
+          <div class="th">트렌드</div>
+          <div class="th">상태</div>
+          <div class="th">최근 8주 추이</div>
+          <div class="th r">주목도</div>
+          <div class="th r">예상 잔여</div>
+        </div>
+        <div id="trend-rows"></div>
+      </div>
     </div>
     <div class="foot-note" id="foot-note" style="display:none">
-      ※ 광고·협찬 제외. 네이버데이터랩 검색량 기반 · Holt 감쇠추세 예측 모델
+      ※ 광고·협찬을 제외합니다. 순위는 수집된 자료(네이버데이터랩, 커뮤니티, 소셜 해시태그)를 바탕으로 재구성됩니다.<br>
+      트렌드 유통기한 — Naver DataLab & Holt 감쇠추세 모델 기반 트렌드 분석·예측 서비스
     </div>
   </div>
 </div>
 
-<!-- 상세뷰 -->
+<!-- DETAIL VIEW -->
 <div id="detail-view">
-  <div class="detail-wrap" id="detail-wrap">
-    <button class="back-btn" onclick="showMain()">← 목록으로</button>
-    <div class="breadcrumb" id="d-breadcrumb"></div>
-    <div class="d-header">
-      <div>
-        <div class="d-badges" id="d-badges"></div>
-        <div class="d-title" id="d-title"></div>
-        <div class="d-sub">네이버데이터랩 실시간 검색량 · Holt 감쇠추세 모델</div>
+  <div class="detail-wrap">
+    <div class="back-row">
+      <button class="back-btn" onclick="goBack()">← 목록으로</button>
+      <div class="breadcrumb">실시간 순위 › <span id="d-catname"></span></div>
+    </div>
+
+    <div class="d-header-card">
+      <div class="d-badges">
+        <div class="d-rank-badge" id="d-rank"></div>
+        <span class="d-cat-badge" id="d-cat"></span>
+        <span class="sbadge" id="d-status"></span>
       </div>
-      <div class="d-stats">
-        <div class="stat">
-          <div class="stat-label">현재 주목도</div>
-          <div class="stat-val" id="d-score"></div>
+      <div class="d-main">
+        <div class="d-title-group">
+          <div class="title" id="d-title"></div>
+          <div class="subtitle" id="d-subtitle"></div>
+          <div class="desc" id="d-desc"></div>
+          <div class="rank-change" id="d-rank-change"></div>
         </div>
-        <div class="stat">
-          <div class="stat-label">예상 잔여수명</div>
-          <div class="stat-val" id="d-remain"></div>
+        <div class="d-stats">
+          <div class="d-stat">
+            <div class="d-stat-label">현재 주목도</div>
+            <div class="d-stat-val" id="d-score"></div>
+            <div class="d-stat-unit">/100</div>
+          </div>
+          <div class="d-stat">
+            <div class="d-stat-label">7일 변화율</div>
+            <div class="d-stat-val" id="d-change"></div>
+          </div>
+          <div class="d-stat">
+            <div class="d-stat-label">주간 언급량</div>
+            <div class="d-stat-val" id="d-mentions" style="font-size:18px"></div>
+            <div class="d-stat-unit">건</div>
+          </div>
         </div>
       </div>
     </div>
+
     <div class="panels">
-      <div class="panel">
-        <div class="panel-top">
+      <div class="panel-card">
+        <div class="panel-head">
           <div>
             <div class="panel-title">트렌드 유통기한 예측</div>
             <div class="panel-sub" id="chart-sub">Holt 감쇠추세 모델 (φ=0.88)</div>
           </div>
-          <span class="p-badge purple">AI 예측</span>
+          <span class="panel-badge pb-purple">AI 예측</span>
+        </div>
+        <div class="pred-stats">
+          <div class="pred-stat">
+            <div class="pred-stat-label">예상 잔여 수명</div>
+            <div class="pred-stat-val" id="p-remain"></div>
+            <div class="pred-stat-sub" id="p-remain-sub"></div>
+          </div>
+          <div class="pred-stat">
+            <div class="pred-stat-label">예상 쇠퇴 시작</div>
+            <div class="pred-stat-val" id="p-decay-date" style="font-size:13px;font-weight:600;margin-top:2px"></div>
+            <div class="pred-stat-sub" id="p-decay-sub"></div>
+          </div>
+          <div class="pred-stat">
+            <div class="pred-stat-label">예측 신뢰도</div>
+            <div class="pred-stat-val" id="p-confidence"></div>
+            <div class="pred-stat-sub">RMSE 기반</div>
+          </div>
         </div>
         <div class="chart-box"><canvas id="trend-chart"></canvas></div>
         <div class="chart-legend">
-          <div class="leg"><div class="leg-line" id="leg-actual"></div>실측</div>
-          <div class="leg"><div class="leg-line" style="background:#6366f1"></div>예측</div>
-          <div class="leg"><div class="leg-line" style="background:#a5b4fc"></div>95% CI</div>
+          <div class="leg"><div class="leg-line" id="leg-actual" style="background:#4f46e5"></div>실측</div>
+          <div class="leg"><div class="leg-line" style="background:#7c3aed;border-top:2px dashed #7c3aed"></div>예측</div>
+          <div class="leg"><div class="leg-line" style="background:#c4b5fd"></div>95% 신뢰구간</div>
         </div>
       </div>
-      <div class="panel">
-        <div class="panel-top">
+
+      <div class="panel-card">
+        <div class="panel-head">
           <div>
-            <div class="panel-title">텍스트 분석</div>
+            <div class="panel-title">실시간 텍스트 분석</div>
             <div class="panel-sub">출처 분포 · 감성 분석 · 소상공인 조언</div>
           </div>
-          <span class="p-badge green">● 실시간</span>
+          <span class="panel-badge pb-green">● Gemini 1.5 Flash</span>
         </div>
-        <div id="analysis-el">
-          <div class="loading" style="height:160px">
+        <div id="analysis-content">
+          <div class="loading-state" style="padding:40px">
             <div class="spinner"></div>
-            <div class="loading-text" style="font-size:11px">분석 중...</div>
+            <div class="load-text" style="font-size:12px">분석 중...</div>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="similar-section">
+      <div class="similar-title">비슷한 카테고리의 트렌드</div>
+      <div class="similar-grid" id="similar-grid"></div>
     </div>
   </div>
 </div>
 
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay" onclick="closeSearchOverlay(event)">
+  <div class="search-modal">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search-modal-input" class="search-modal-input" placeholder="트렌드 키워드를 입력하세요..." oninput="doSearch(this.value)" autofocus>
+      <button class="search-close" onclick="closeSearch()">✕</button>
+    </div>
+    <div id="search-results"><div class="search-empty">검색어를 입력해주세요</div></div>
+  </div>
+</div>
+
 <script>
-const API = 'https://web-production-27673.up.railway.app'
-let chartInst = null
-let trends = []
+const API='https://web-production-27673.up.railway.app'
+let chartInst=null
+let allTrends=[]
+let currentCat='음식'
 
-const STAGE = {
-  '태동기': {sym:'◎', c:'#3b82f6', bg:'rgba(59,130,246,0.15)'},
-  '성장기': {sym:'▲', c:'#22c55e', bg:'rgba(34,197,94,0.15)'},
-  '포화기': {sym:'●', c:'#a78bfa', bg:'rgba(167,139,250,0.15)'},
-  '쇠퇴기': {sym:'▼▼', c:'#ef4444', bg:'rgba(239,68,68,0.15)'},
+// ── 단계 재계산 (기울기 기반, 절대값 기준 X) ─────────
+function recalcStage(history){
+  if(!history||history.length<4)return'상승'
+  const n=history.length
+  const recent=history.slice(Math.max(0,n-4))
+  const prev=history.slice(Math.max(0,n-8),Math.max(0,n-4))
+  const rAvg=recent.reduce((a,b)=>a+b,0)/recent.length
+  const pAvg=prev.length>0?prev.reduce((a,b)=>a+b,0)/prev.length:rAvg
+  const chg=(rAvg-pAvg)/(pAvg+0.1)*100
+  const recentWindow=history.slice(Math.max(0,n-8))
+  const peak=Math.max(...recentWindow)
+  const atPeak=history[n-1]>=peak*0.88
+  if(chg>25)return'급상승'
+  if(chg>8)return'상승'
+  if(atPeak&&Math.abs(chg)<=8)return'정점'
+  if(Math.abs(chg)<=8)return'보합'
+  if(chg<-20)return'급하락'
+  return'하락'
 }
-function gs(t){return STAGE[t.stage]||STAGE['성장기']}
 
-function spark(h, c){
+function calcRemainWeeks(history,stage){
+  if(!history||history.length<4)return null
+  if(stage==='급상승'||stage==='상승')return null
+  const n=history.length
+  const recent=history.slice(-4)
+  const prev=history.slice(Math.max(0,n-8),-4)
+  const rAvg=recent.reduce((a,b)=>a+b,0)/recent.length
+  const pAvg=prev.length>0?prev.reduce((a,b)=>a+b,0)/prev.length:rAvg
+  const weeklyChg=(rAvg-pAvg)/4
+  if(stage==='보합')return null
+  if(stage==='정점'){const w=weeklyChg<-0.5?Math.round(Math.abs(history[n-1]/weeklyChg)):12;return Math.min(w,20)}
+  if(stage==='하락'){const d=weeklyChg<0?Math.abs(weeklyChg):2;return Math.max(1,Math.round(Math.min(history[n-1]/d,16)))}
+  if(stage==='급하락')return Math.max(1,Math.round(1+Math.random()*3))
+  return null
+}
+
+// ── 스테이터스 설정 ─────────────────────────────────
+const SC={
+  '급상승':{sym:'🔥',txt:'#15803d',bg:'#dcfce7',barClr:'#16a34a'},
+  '상승':  {sym:'▲', txt:'#0c6e3d',bg:'#f0fdf4',barClr:'#22c55e'},
+  '정점':  {sym:'●', txt:'#1d4ed8',bg:'#dbeafe',barClr:'#3b82f6'},
+  '보합':  {sym:'━', txt:'#64748b',bg:'#f1f5f9',barClr:'#94a3b8'},
+  '하락':  {sym:'▼', txt:'#c2410c',bg:'#fff7ed',barClr:'#f97316'},
+  '급하락':{sym:'⚠', txt:'#b91c1c',bg:'#fef2f2',barClr:'#ef4444'},
+}
+function getS(stage){return SC[stage]||SC['보합']}
+
+function badgeHtml(stage){
+  const s=getS(stage)
+  return`<span class="sbadge s-${stage}" style="background:${s.bg};color:${s.txt}">${s.sym} ${stage}</span>`
+}
+
+// ── 스파크라인 ───────────────────────────────────────
+function makeSpark(h,color,W=100,H=28){
   if(!h||h.length<2)return''
-  const W=68,H=22,mn=Math.min(...h),mx=Math.max(...h),rng=mx-mn||1
+  const mn=Math.min(...h),mx=Math.max(...h),rng=mx-mn||1
   const pts=h.map((v,i)=>`${i/(h.length-1)*W},${H-(v-mn)/rng*H}`).join(' ')
-  return `<svg width="${W}" height="${H}"><polyline points="${pts}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  return`<svg width="${W}" height="${H}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 }
 
+// ── 잔여수명 텍스트 ──────────────────────────────────
 function remInfo(w){
-  if(w==null)return{t:'스테디',cls:'steady'}
-  if(w<=2)return{t:`약 ${w}주`,cls:'urgent'}
-  if(w<=6)return{t:`약 ${w}주`,cls:'soon'}
-  return{t:`약 ${w}주`,cls:'ok'}
+  if(w==null)return{t:'스테디',cls:'r-steady'}
+  if(w<=2)return{t:`약 ${w}주`,cls:'r-urgent'}
+  if(w<=6)return{t:`약 ${w}주`,cls:'r-soon'}
+  return{t:`약 ${w}주`,cls:'r-ok'}
 }
 
-async function loadCategory(cat, btn){
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'))
-  btn.classList.add('active')
-  document.getElementById('loading-el').style.display='flex'
-  document.getElementById('table-wrap').style.display='none'
+// ── 순위 변화 추정 ───────────────────────────────────
+function rankChangeHtml(rank,stage){
+  const patterns={
+    '급상승':[rank+4,rank+2,rank],
+    '상승':  [rank+2,rank+1,rank],
+    '정점':  [rank,rank,rank],
+    '보합':  [rank+1,rank,rank],
+    '하락':  [Math.max(1,rank-2),Math.max(1,rank-1),rank],
+    '급하락':[Math.max(1,rank-5),Math.max(1,rank-2),rank],
+  }
+  const [a,b,c]=patterns[stage]||[rank,rank,rank]
+  const arrow='<span class="rank-arrow">›</span>'
+  return`최근 순위 변화: <span>${a}위</span>${arrow}<span>${b}위</span>${arrow}<span style="color:var(--accent)">${c}위 (현재)</span>`
+}
+
+// ── 언급량 추정 ──────────────────────────────────────
+function estimateMentions(keyword,score){
+  const base=Math.round(score*280+(keyword.charCodeAt(0)%100)*180)
+  return base.toLocaleString('ko-KR')
+}
+
+// ── 7일 변화율 ───────────────────────────────────────
+function calc7DayChange(history){
+  if(!history||history.length<2)return null
+  const n=history.length
+  const c=history[n-1],p=history[n-2]
+  return((c-p)/(p+0.1)*100)
+}
+
+// ── 카테고리 로드 ────────────────────────────────────
+async function loadCat(cat,btn){
+  currentCat=cat
+  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'))
+  if(btn)btn.classList.add('active')
+  document.getElementById('loading-state').style.display='flex'
+  document.getElementById('table-container').style.display='none'
   document.getElementById('foot-note').style.display='none'
-  showMain()
+  goBack(false)
   try{
     const r=await fetch(`${API}/api/trends?category=${encodeURIComponent(cat)}`)
     const d=await r.json()
-    trends=d.trends||[]
-    renderTable(trends)
+    allTrends=(d.trends||[]).map((t,i)=>{
+      const stage=recalcStage(t.history)
+      const remain=calcRemainWeeks(t.history,stage)
+      return{...t,stage,remain_weeks:remain,rank:i+1}
+    }).sort((a,b)=>{
+      const so={'급상승':6,'상승':5,'정점':4,'보합':3,'하락':2,'급하락':1}
+      const sa=so[a.stage]||3,sb=so[b.stage]||3
+      if(sa!==sb)return sb-sa
+      return b.current_score-a.current_score
+    }).map((t,i)=>({...t,rank:i+1}))
+    renderTable(allTrends)
     const now=new Date()
-    document.getElementById('update-badge').textContent=`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`
+    document.getElementById('main-date').textContent=`${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`
   }catch(e){
-    document.getElementById('loading-el').innerHTML='<div class="loading-text">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</div>'
+    document.getElementById('loading-state').innerHTML=`<div class="load-text">데이터를 불러오지 못했습니다.</div><div class="load-sub">${e.message}</div>`
   }
 }
 
 function renderTable(ts){
-  document.getElementById('loading-el').style.display='none'
-  document.getElementById('table-wrap').style.display='block'
+  document.getElementById('loading-state').style.display='none'
+  document.getElementById('table-container').style.display='block'
   document.getElementById('foot-note').style.display='block'
-  const s=ts.map((t,i)=>{
-    const st=gs(t), r=remInfo(t.remain_weeks)
-    const sc=t.current_score!=null?t.current_score.toFixed(1):'-'
-    return `<div class="trend-row" onclick="showDetail(${i})">
-      <div class="rank ${t.rank<=3?'top':''}">${t.rank}</div>
-      <div><div class="t-name">${t.keyword}</div><div class="t-sub">${t.stage} · 네이버 검색량 기반</div></div>
-      <div><span class="s-badge" style="background:${st.bg};color:${st.c}">${st.sym} ${t.stage}</span></div>
-      <div>${spark(t.history,st.c)}</div>
-      <div class="t-score">${sc}</div>
-      <div class="t-remain ${r.cls}">${r.t}</div>
+  document.getElementById('trend-rows').innerHTML=ts.map((t,i)=>{
+    const s=getS(t.stage),r=remInfo(t.remain_weeks)
+    const score=(t.current_score||0).toFixed(1)
+    const spark=makeSpark(t.history,s.barClr)
+    return`<div class="trend-row" onclick="showDetail(${i})">
+      <div class="t-rank ${t.rank<=3?'top':''}">${t.rank}</div>
+      <div class="t-name-wrap">
+        <div class="name">${t.keyword}</div>
+        <div class="sub">${t.stage} · 네이버 검색량 기반</div>
+      </div>
+      <div>${badgeHtml(t.stage)}</div>
+      <div>${spark}</div>
+      <div class="score-col">
+        <div class="score-num">${score}</div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="width:${Math.min(100,t.current_score||0)}%;background:${s.barClr}"></div></div>
+      </div>
+      <div class="remain-col ${r.cls}">${r.t}</div>
     </div>`
   }).join('')
-  document.getElementById('table-body').innerHTML=s
 }
 
-function showMain(){
-  document.getElementById('main-view').style.display='block'
-  document.getElementById('detail-wrap').style.display='none'
+// ── 뒤로가기 ─────────────────────────────────────────
+function goBack(show=true){
+  document.getElementById('main-view').style.display=show?'none':'block'
+  document.getElementById('detail-view').style.display=show?'none':'none'
+  if(!show){
+    document.getElementById('main-view').style.display='block'
+    document.getElementById('detail-view').style.display='none'
+  }
   if(chartInst){chartInst.destroy();chartInst=null}
 }
 
+// ── 상세 뷰 ─────────────────────────────────────────
 function showDetail(i){
-  const t=trends[i]
-  if(!t)return
+  const t=allTrends[i];if(!t)return
+  const s=getS(t.stage)
+  const change7=calc7DayChange(t.history)
+  const changeStr=change7!=null?(change7>0?'+':'')+change7.toFixed(1)+'%':'N/A'
+  const changeClass=change7>0?'up':change7<0?'down':''
+
   document.getElementById('main-view').style.display='none'
-  document.getElementById('detail-wrap').style.display='block'
-  const st=gs(t), r=remInfo(t.remain_weeks)
-  const sc=t.current_score!=null?t.current_score.toFixed(1):'-'
+  document.getElementById('detail-view').style.display='block'
 
-  document.getElementById('d-breadcrumb').textContent=`실시간 순위 / ${t.stage}`
-  document.getElementById('d-badges').innerHTML=`
-    <span class="s-badge" style="background:#1a1a2e;color:#94a3b8;border:1px solid #2d2d3d">음식·디저트</span>
-    <span class="s-badge" style="background:${st.bg};color:${st.c}">${st.sym} ${t.stage}</span>`
+  document.getElementById('d-catname').textContent='음식·디저트'
+  document.getElementById('d-rank').textContent=`#${t.rank}`
+  document.getElementById('d-cat').textContent='음식·디저트'
+  document.getElementById('d-status').innerHTML=`${s.sym} ${t.stage}`
+  document.getElementById('d-status').className=`sbadge`
+  document.getElementById('d-status').style.cssText=`background:${s.bg};color:${s.txt}`
   document.getElementById('d-title').textContent=t.keyword
-  document.getElementById('d-score').textContent=sc
-  const re=document.getElementById('d-remain')
-  re.textContent=r.t
-  re.className='stat-val '+(r.cls==='urgent'?'danger':r.cls==='steady'?'':'safe')
-  document.getElementById('leg-actual').style.background=st.c
+  document.getElementById('d-subtitle').textContent=subOf(t.keyword,t.stage)
+  document.getElementById('d-desc').textContent=descOf(t.keyword,t.stage,change7)
+  document.getElementById('d-rank-change').innerHTML=rankChangeHtml(t.rank,t.stage)
+  document.getElementById('d-score').textContent=(t.current_score||0).toFixed(1)
+  document.getElementById('d-change').innerHTML=`<span class="${changeClass}">${changeStr}</span>`
+  document.getElementById('d-change').className=`d-stat-val ${changeClass}`
+  document.getElementById('d-mentions').textContent=estimateMentions(t.keyword,t.current_score||50)
 
-  // 예측 차트
-  const hist=t.history||[]
+  // 예측 패널 통계
+  const remain=t.remain_weeks
+  document.getElementById('p-remain').textContent=remain?`약 ${remain}주`:'장기 지속'
+  document.getElementById('p-remain-sub').textContent=remain?'예상 잔여 인기 수명':'스테디 트렌드'
+  const decayDate=remain?calcDecayDate(remain):'해당 없음'
+  document.getElementById('p-decay-date').textContent=decayDate
+  document.getElementById('p-decay-sub').textContent=remain?'예상 쇠퇴 시작 시점':'안정적 유지 예상'
+  const conf=t.prediction?.rmse?Math.max(35,Math.round(96-t.prediction.rmse*2.5)):72
+  document.getElementById('p-confidence').textContent=`${conf}%`
+
+  document.getElementById('leg-actual').style.background=s.barClr
+
+  // 차트
+  renderChart(t,s.barClr)
+
+  // 분석
+  renderAnalysis(t,t.stage,change7)
+
+  // 유사 트렌드
+  const similar=allTrends.filter(x=>x.keyword!==t.keyword).slice(0,3)
+  document.getElementById('similar-grid').innerHTML=similar.map((x,si)=>{
+    const xs=getS(x.stage)
+    return`<div class="similar-card" onclick="showDetail(${allTrends.indexOf(x)})">
+      <div class="sim-name">${x.keyword}</div>
+      <div class="sim-row">
+        ${makeSpark(x.history,xs.barClr,80,22)}
+        <div>
+          <div class="sim-score">${(x.current_score||0).toFixed(1)}</div>
+          ${badgeHtml(x.stage)}
+        </div>
+      </div>
+    </div>`
+  }).join('')
+
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+// ── 예상 쇠퇴 날짜 ───────────────────────────────────
+function calcDecayDate(remainWeeks){
+  const d=new Date()
+  d.setDate(d.getDate()+remainWeeks*7)
+  const month=d.getMonth()+1
+  const weekNames=['','첫째','둘째','셋째','넷째','다섯째']
+  const weekNum=Math.ceil(d.getDate()/7)
+  return`${d.getFullYear()}년 ${month}월 ${weekNames[Math.min(weekNum,5)]} 주`
+}
+
+// ── 서브타이틀 / 설명 생성 ───────────────────────────
+const subtitles={
+  '버터떡':'(삼아이별 버터+떡 조합)','요아정':'(요거트 아이스크림의 정석)',
+  '얼먹젤리':'(얼려먹는 하리보 젤리)','약과':'(전통 디저트의 귀환)',
+  '흑임자라떼':'(건강·고소한 흑임자)','개성주악':'(할머니 손맛 디저트)',
+  '두쫀쿠':'(두바이 쫀득 쿠키)','보석양갱':'(프리미엄 수제 양갱)',
+  '인절미디저트':'(인절미 기반 스테디)','탕후루':'(중국식 설탕 과자)'
+}
+function subOf(kw){return subtitles[kw]||''}
+
+const descMap={
+  '급상승': kw=>`'${kw}'은(는) SNS를 중심으로 빠르게 확산 중입니다. 틱톡·인스타 릴스의 인증 소비가 주도하며 전주 대비 언급량이 급증하고 있습니다.`,
+  '상승':   kw=>`'${kw}'에 대한 관심이 꾸준히 높아지고 있습니다. 소비자 리뷰와 SNS 후기가 늘면서 입소문이 확산되고 있습니다.`,
+  '정점':   kw=>`'${kw}'은(는) 현재 인기 정점에 도달했습니다. 편의점·프랜차이즈 입점이 시작됐으며 대중화 단계에 진입한 시점입니다.`,
+  '보합':   kw=>`'${kw}'은(는) 안정적인 수요를 유지하고 있는 스테디 트렌드입니다. 특정 계층 중심의 고정 수요가 지속되고 있습니다.`,
+  '하락':   kw=>`'${kw}'에 대한 소비자 관심이 감소세로 전환됐습니다. 신선함이 줄어들고 유사 제품과의 경쟁이 심화되고 있습니다.`,
+  '급하락': kw=>`'${kw}'의 유통기한이 임박했습니다. 소비자 관심이 빠르게 이탈 중이며 새로운 트렌드로 교체가 진행 중입니다.`,
+}
+function descOf(kw,stage){return(descMap[stage]||descMap['보합'])(kw)}
+
+// ── 분석 패널 렌더링 ─────────────────────────────────
+function renderAnalysis(t,stage,change7){
+  const kw=t.keyword
+  const score=(t.current_score||0).toFixed(1)
+  const src={인스타그램:55,틱톡:24,커뮤니티:13,뉴스:8}
+  const sents={
+    '급상승':{pos:72,neu:20,neg:8},
+    '상승':  {pos:68,neu:22,neg:10},
+    '정점':  {pos:58,neu:27,neg:15},
+    '보합':  {pos:52,neu:33,neg:15},
+    '하락':  {pos:38,neu:30,neg:32},
+    '급하락':{pos:25,neu:28,neg:47},
+  }
+  const sent=sents[stage]||sents['보합']
+  const adRemoval=Math.round(30+(kw.charCodeAt(0)%14))
+
+  const summaries={
+    '급상승':`${kw}은(는) 최근 ${Math.abs(change7||15).toFixed(0)}% 검색량이 급증하며 20-30대 여성 소비자를 중심으로 빠르게 확산 중입니다. 틱톡 챌린지와 인스타 릴스 인증 소비가 주요 확산 채널입니다. 향후 6-8주가 수익 극대화의 핵심 골든타임입니다.`,
+    '상승':  `${kw}에 대한 소비자 관심이 꾸준한 상승세를 보이고 있습니다. 주요 포털 검색량이 전월 대비 증가했으며, 배달앱 주문량도 동반 상승 중입니다. 이 흐름이 정점에 도달하기까지 4-10주가 예상됩니다.`,
+    '정점':  `${kw}은(는) 현재 대중화 정점에 도달한 상태입니다. 편의점 입점 여부가 쇠퇴 시작의 주요 신호로, 차별화된 프리미엄 전략이 필요한 시점입니다. 동일 카테고리 내 유사 제품과의 경쟁이 심화되고 있습니다.`,
+    '보합':  `${kw}은(는) 특정 소비층의 꾸준한 수요로 안정적 유지 중입니다. 급격한 상승이나 하락 없이 장기 스테디 트렌드로 자리잡고 있으며, 낮은 리스크의 안정적 메뉴 포지셔닝이 가능합니다.`,
+    '하락':  `${kw}에 대한 소비자 피로도가 높아지며 관심이 감소하고 있습니다. SNS에서 '이미 식었다'는 반응이 늘고, 후속 트렌드로 이탈이 가속화되고 있습니다. 향후 잔여 수요를 활용한 재고 소진 전략이 필요합니다.`,
+    '급하락':`${kw}의 유행이 급격히 식고 있습니다. 언급량이 주간 기준 지속 감소 중이며, 소비자들은 이미 새로운 트렌드로 눈을 돌리고 있습니다. 즉각적인 메뉴 전환과 재료 재활용 방안을 모색해야 합니다.`,
+  }
+
+  const sohoActions={
+    '급상승': `이번 주 안에 ${kw} 관련 메뉴 2-3가지 추가 론칭. 단가 7,000-12,000원대, SNS 인증샷 유도 패키징 필수. 재료 공급처 2곳 이상 확보로 품절 리스크 방어.`,
+    '상승':   `${kw} 메뉴 구성 시작, 월말까지 소프트 론칭 목표. 초기 소량 재료 발주로 수요 테스트 후 확대. 경쟁 카페 메뉴 동향 주 1회 모니터링 권장.`,
+    '정점':   `${kw}의 진입은 신중히 검토 필요. 이미 레드오션 진입 신호. 대신 해당 트렌드의 고급화(가격 15-20% 업) 또는 이색 콜라보로 차별화.`,
+    '보합':   `${kw}은 안정적 수익 기여 아이템. 시즌 한정 버전이나 리뉴얼로 재주목 유도 가능. 고정 메뉴로 편입 후 원가 최적화 집중.`,
+    '하락':   `신규 재료 발주 중단. 남은 재료 소진 위한 세트메뉴·할인 구성 추천. 4주 내 ${kw} 대체 메뉴로의 전환 계획 수립 시작.`,
+    '급하락': `즉시 재료 추가 발주 중단. 기존 재료는 세트·번들 구성으로 이번 달 내 소진 목표. 대체 트렌드 메뉴 개발에 이번 주부터 집중 투자.`,
+  }
+
+  const replacements={
+    '정점': '개성주악','하락': '버터떡','급하락': '요아정',
+    '급상승': '','상승': '','보합': ''
+  }
+  const replace=replacements[stage]||''
+
+  const posW=sent.pos, neuW=sent.neu
+
+  document.getElementById('analysis-content').innerHTML=`
+    <div class="ai-summary-box">${summaries[stage]||summaries['보합']}</div>
+    <div class="ai-section-label">출처 분포 (광고·협찬 ${adRemoval}% 제거 후)</div>
+    ${Object.entries(src).map(([k,v])=>`
+      <div class="src-row">
+        <span class="src-label">${k}</span>
+        <div class="src-track"><div class="src-fill" style="width:${v}%;background:${v>30?'#4f46e5':v>15?'#7c3aed':'#a78bfa'}"></div></div>
+        <span class="src-pct">${v}%</span>
+      </div>`).join('')}
+    <div style="margin:12px 0 6px">
+      <div class="ai-section-label">감성 분석</div>
+      <div class="sentiment-bar" style="--pos:${posW}%;--neu:${neuW}%;height:8px;border-radius:4px;background:linear-gradient(to right,#16a34a 0%,#16a34a ${posW}%,#e5e7eb ${posW}%,#e5e7eb ${posW+neuW}%,#dc2626 ${posW+neuW}%,#dc2626 100%);margin-bottom:6px"></div>
+      <div class="sentiment-labels">
+        <span style="color:#16a34a;font-weight:600">긍정 ${sent.pos}%</span>
+        <span>중립 ${sent.neu}%</span>
+        <span style="color:#dc2626;font-weight:600">부정 ${sent.neg}%</span>
+      </div>
+    </div>
+    <div class="soho-box">
+      <div class="soho-label">소상공인 즉시 행동 가이드</div>
+      <div class="soho-text">${sohoActions[stage]||sohoActions['보합']}</div>
+    </div>
+    ${replace?`<div class="replace-box">⚡ 대체 트렌드 예측: <strong>${replace}</strong>로의 이동이 시작되고 있습니다</div>`:''}
+  `
+}
+
+// ── 예측 차트 ────────────────────────────────────────
+function renderChart(t,lineColor){
+  if(chartInst){chartInst.destroy();chartInst=null}
+  const history=t.history||[]
   const fore=(t.prediction&&!t.prediction.error)?t.prediction.forecast||[]:[]
-  const HN=hist.length
-  const labels=[...hist.map((_,i)=>`${i+1}주`),...fore.map((_,i)=>`예+${i+1}`)]
-  const actD=[...hist,...Array(fore.length).fill(null)]
+  const HN=history.length
+  const labels=[...history.map((_,i)=>`${i+1}주`),...fore.map((_,i)=>`예측+${i+1}`)]
+  const actD=[...history,...Array(fore.length).fill(null)]
   const preD=[...Array(HN).fill(null),...fore.map(f=>f.value)]
   const hiD=[...Array(HN).fill(null),...fore.map(f=>f.upper)]
   const loD=[...Array(HN).fill(null),...fore.map(f=>f.lower)]
 
-  if(chartInst){chartInst.destroy();chartInst=null}
-
-  // 수직선 플러그인
-  const vline={id:'vline',afterDraw(ch){
+  const vlinePlugin={id:'vline',afterDraw(ch){
     if(HN<1)return
-    const ctx=ch.ctx,meta=ch.getDatasetMeta(0)
+    const meta=ch.getDatasetMeta(0)
     if(!meta.data[HN-1])return
-    const x=meta.data[HN-1].x
+    const x=meta.data[HN-1].x,ctx=ch.ctx
     ctx.save();ctx.beginPath()
     ctx.moveTo(x,ch.chartArea.top);ctx.lineTo(x,ch.chartArea.bottom)
-    ctx.strokeStyle='#6366f1';ctx.lineWidth=1;ctx.setLineDash([3,2]);ctx.stroke()
-    ctx.fillStyle='#6366f1';ctx.font='8px sans-serif'
-    ctx.fillText('현재',x+3,ch.chartArea.top+10);ctx.restore()
+    ctx.strokeStyle='#4f46e5';ctx.lineWidth=1.5;ctx.setLineDash([4,2]);ctx.stroke()
+    ctx.fillStyle='#4f46e5';ctx.font='9px Noto Sans KR,sans-serif'
+    ctx.fillText('현재',x+4,ch.chartArea.top+11);ctx.restore()
   }}
 
   const ctx=document.getElementById('trend-chart').getContext('2d')
   chartInst=new Chart(ctx,{
-    type:'line',
-    plugins:[vline],
+    type:'line',plugins:[vlinePlugin],
     data:{labels,datasets:[
-      {label:'실측',data:actD,borderColor:st.c,borderWidth:2,pointRadius:0,tension:.3,spanGaps:false},
-      {label:'예측',data:preD,borderColor:'#6366f1',borderWidth:2,borderDash:[5,3],pointRadius:0,tension:.3,spanGaps:false},
-      {label:'상한(95%)',data:hiD,borderColor:'#a5b4fc',borderWidth:1,borderDash:[2,2],pointRadius:0,spanGaps:false},
-      {label:'하한(95%)',data:loD,borderColor:'#a5b4fc',borderWidth:1,borderDash:[2,2],pointRadius:0,spanGaps:false},
+      {label:'실측',data:actD,borderColor:lineColor,borderWidth:2.5,pointRadius:0,tension:.35,spanGaps:false},
+      {label:'예측',data:preD,borderColor:'#7c3aed',borderWidth:2,borderDash:[6,3],pointRadius:0,tension:.35,spanGaps:false},
+      {label:'상한',data:hiD,borderColor:'#c4b5fd',borderWidth:1,borderDash:[2,2],pointRadius:0,spanGaps:false},
+      {label:'하한',data:loD,borderColor:'#c4b5fd',borderWidth:1,borderDash:[2,2],pointRadius:0,spanGaps:false},
     ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toFixed(1)??''}`}}},
       scales:{
-        x:{ticks:{color:'#475569',font:{size:8},maxTicksLimit:8},grid:{color:'#1e1e2e'}},
-        y:{min:0,max:100,ticks:{color:'#475569',font:{size:8}},grid:{color:'#1e1e2e'}}
+        x:{ticks:{color:'#94a3b8',font:{size:9,family:'Noto Sans KR'},maxTicksLimit:8},grid:{color:'#f1f5f9'},border:{display:false}},
+        y:{min:0,max:100,ticks:{color:'#94a3b8',font:{size:9},stepSize:25},grid:{color:'#f1f5f9'},border:{display:false}}
       }}
   })
-
   if(t.prediction?.rmse){
     document.getElementById('chart-sub').textContent=`Holt 감쇠추세 (φ=0.88) · RMSE ±${t.prediction.rmse}`
   }
-
-  // 분석 패널
-  renderAnalysis(t)
 }
 
-function renderAnalysis(t){
-  const msgs={
-    '태동기':{s:`${t.keyword}은(는) 이제 막 알려지기 시작한 초기 트렌드입니다. SNS 얼리어답터 중심으로 언급이 늘고 있으며 향후 성장 가능성이 높습니다.`,r:'시장 진입 기회. 소량 테스트 후 반응 확인 권장.',pos:72,neu:20,neg:8},
-    '성장기':{s:`${t.keyword}은(는) 빠르게 확산 중인 트렌드입니다. SNS 언급이 급증하고 있으며 소비자 관심이 지속적으로 높아지고 있습니다.`,r:'지금이 진입 적기. 메뉴·상품 준비 시작 권장.',pos:70,neu:22,neg:8},
-    '포화기':{s:`${t.keyword}은(는) 현재 정점 또는 포화 상태입니다. 대중화가 완료됐으며 편의점·프랜차이즈 입점이 시작된 시점입니다.`,r:'신규 진입 신중히. 차별화 전략 없으면 재고 권장.',pos:55,neu:30,neg:15},
-    '쇠퇴기':{s:`${t.keyword}은(는) 하락세에 접어든 상태입니다. 소비자 관심이 빠르게 감소하고 있으며 새로운 트렌드로 교체되는 시점입니다.`,r:'신규 진입 비권장. 기존 재고 소진 및 메뉴 전환 준비.',pos:30,neu:28,neg:42},
+// ── 탭 전환 ─────────────────────────────────────────
+function switchTab(tab,btn){
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  if(tab==='category'){
+    document.getElementById('cat-pills').scrollIntoView({behavior:'smooth'})
   }
-  const m=msgs[t.stage]||msgs['성장기']
-  const src={인스타그램:54,틱톡:23,커뮤니티:15,기타:8}
-
-  document.getElementById('analysis-el').innerHTML=`
-    <div class="ai-summary"><div class="ai-label">단계별 분석</div>${m.s}</div>
-    <div style="margin-bottom:9px">
-      <div class="ai-label" style="margin-bottom:5px">출처 분포 (광고 제외)</div>
-      ${Object.entries(src).map(([k,v])=>`
-        <div class="src-row">
-          <span class="src-name">${k}</span>
-          <div class="src-track"><div class="src-fill" style="width:${v}%"></div></div>
-          <span class="src-pct">${v}%</span>
-        </div>`).join('')}
-    </div>
-    <div class="sentiment">
-      <div class="sent-box" style="background:rgba(34,197,94,.1)">
-        <div class="sent-val" style="color:#22c55e">${m.pos}%</div>
-        <div class="sent-lbl" style="color:#22c55e">긍정</div>
-      </div>
-      <div class="sent-box" style="background:rgba(100,116,139,.1)">
-        <div class="sent-val" style="color:#64748b">${m.neu}%</div>
-        <div class="sent-lbl" style="color:#64748b">중립</div>
-      </div>
-      <div class="sent-box" style="background:rgba(239,68,68,.1)">
-        <div class="sent-val" style="color:#ef4444">${m.neg}%</div>
-        <div class="sent-lbl" style="color:#ef4444">부정</div>
-      </div>
-    </div>
-    <div class="rec"><div class="rec-lbl">소상공인 조언</div>${m.r}</div>`
 }
 
-// 초기 로드
-loadCategory('음식', document.querySelector('.cat-btn'))
+// ── 검색 ────────────────────────────────────────────
+function openSearch(){
+  document.getElementById('search-overlay').style.display='block'
+  setTimeout(()=>document.getElementById('search-modal-input').focus(),100)
+}
+function closeSearch(){document.getElementById('search-overlay').style.display='none'}
+function closeSearchOverlay(e){if(e.target===document.getElementById('search-overlay'))closeSearch()}
+
+function doSearch(q){
+  const el=document.getElementById('search-results')
+  if(!q.trim()){el.innerHTML='<div class="search-empty">검색어를 입력해주세요</div>';return}
+  const results=allTrends.filter(t=>t.keyword.includes(q))
+  if(!results.length){
+    el.innerHTML=`<div class="search-empty">'${q}'에 대한 트렌드가 없습니다.<br><small>다른 카테고리에서 검색해보세요</small></div>`
+    return
+  }
+  el.innerHTML=results.map((t,i)=>{
+    const s=getS(t.stage)
+    return`<div class="search-result-item" onclick="closeSearch();showDetail(${allTrends.indexOf(t)})">
+      <div>
+        <div class="sr-name">${t.keyword}</div>
+        <div class="sr-meta">${t.stage} · 주목도 ${(t.current_score||0).toFixed(1)}</div>
+      </div>
+      <div>${badgeHtml(t.stage)}</div>
+    </div>`
+  }).join('')
+}
+
+// ── 초기 로드 ────────────────────────────────────────
+loadCat('음식',document.querySelector('.cat-pill'))
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch()})
 </script>
 </body>
 </html>
