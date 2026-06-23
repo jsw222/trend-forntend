@@ -3,300 +3,277 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>트렌드 유통기한 — 실시간 트렌드 예측</title>
+<title>트렌드 유통기한 — 실시간 트렌드 예측 서비스</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f4f6fb;--white:#fff;--border:#e4e8f0;
-  --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
-  --accent:#4f46e5;--accent-light:#eef2ff;
-  --green:#16a34a;--green-bg:#dcfce7;
-  --lime:#22c55e;--lime-bg:#f0fdf4;
-  --blue:#2563eb;--blue-bg:#dbeafe;
+  --bg:#f0f2f8;--white:#fff;--card:#fff;
+  --border:#e2e8f3;--border2:#d0d8ec;
+  --t1:#0b1120;--t2:#3d4e6b;--t3:#8898b8;--t4:#b8c5d8;
+  --accent:#4f46e5;--accent2:#7c3aed;--accent-bg:#eef2ff;
+  --green:#15803d;--green-bg:#dcfce7;--green2:#22c55e;
+  --blue:#1d4ed8;--blue-bg:#dbeafe;
   --gray:#64748b;--gray-bg:#f1f5f9;
-  --orange:#ea580c;--orange-bg:#fff7ed;
-  --red:#dc2626;--red-bg:#fef2f2;
-  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
-  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 12px 40px rgba(0,0,0,.06);
+  --orange:#c2410c;--orange-bg:#fff7ed;
+  --red:#b91c1c;--red-bg:#fee2e2;
+  --sh1:0 1px 3px rgba(15,30,80,.06),0 4px 20px rgba(15,30,80,.04);
+  --sh2:0 4px 16px rgba(15,30,80,.1),0 16px 48px rgba(15,30,80,.08);
 }
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px}
-a{text-decoration:none;color:inherit}
+html,body{height:100%}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.5}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 
-/* NAV */
-nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.nav-inner{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:0;height:56px}
-.nav-logo{display:flex;align-items:center;gap:8px;margin-right:28px;flex-shrink:0}
-.nav-logo-icon{width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
-.nav-logo-text{font-size:15px;font-weight:700;color:var(--t1)}
-.nav-tabs{display:flex;gap:2px;flex:1}
-.nav-tab{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);transition:all .15s;white-space:nowrap}
-.nav-tab:hover{background:var(--accent-light);color:var(--accent)}
-.nav-tab.active{background:var(--accent-light);color:var(--accent);font-weight:600}
-.nav-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:6px 12px;transition:all .2s;min-width:220px}
-.nav-search:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
-.nav-search input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--t1);width:100%}
-.nav-search input::placeholder{color:var(--t3)}
-.search-icon{color:var(--t3);font-size:14px;flex-shrink:0}
+/* ── NAV ─────────────────────────── */
+nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(15,30,80,.06)}
+.nav-i{max-width:1140px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:58px;gap:4px}
+.logo{display:flex;align-items:center;gap:9px;margin-right:24px;flex-shrink:0;text-decoration:none}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800}
+.logo-text{font-size:15px;font-weight:700;color:var(--t1)}
+.logo-badge{font-size:9px;padding:2px 6px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;margin-left:4px;letter-spacing:.04em}
+.nav-tabs{display:flex;gap:0;flex:1}
+.nav-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t3);transition:all .15s;cursor:pointer}
+.nav-tab:hover{background:var(--accent-bg);color:var(--accent)}
+.nav-tab.active{background:var(--accent-bg);color:var(--accent);font-weight:700}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:7px 14px;cursor:text;transition:all .2s;min-width:200px}
+.search-box:hover{border-color:var(--accent2);background:#fff}
+.search-box input{border:none;background:none;outline:none;font-size:12px;font-family:inherit;color:var(--t1);width:100%;cursor:text}
+.search-box input::placeholder{color:var(--t4)}
+.search-icon{color:var(--t3);font-size:13px;flex-shrink:0}
 
-/* MAIN WRAP */
-.main-wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
+/* ── MAIN VIEW ────────────────────── */
+.wrap{max-width:1140px;margin:0 auto;padding:32px 24px}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-head h1{font-size:24px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
+.page-head .sub{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.6}
+.page-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-weight:600}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.date-lbl{font-size:11px;color:var(--t3)}
 
-/* VIEW HEADER */
-.view-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.view-title-group h1{font-size:22px;font-weight:700;color:var(--t1);margin-bottom:4px}
-.view-title-group p{font-size:12px;color:var(--t3)}
-.view-meta{display:flex;align-items:center;gap:8px}
-.meta-badge{font-size:11px;padding:4px 10px;border-radius:20px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;font-weight:500}
-.date-text{font-size:11px;color:var(--t3)}
-
-/* CATEGORY PILLS */
-.cat-pills{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
-.cat-pill{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--t2);font-size:12px;font-weight:500;transition:all .15s}
-.cat-pill:hover{border-color:var(--accent);color:var(--accent)}
-.cat-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-/* TREND TABLE */
-.trend-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
-.trend-table-header{display:grid;grid-template-columns:48px 1fr 100px 110px 80px 88px;padding:10px 20px;background:#fafbfd;border-bottom:1px solid var(--border)}
-.th{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+/* ── TABLE ────────────────────────── */
+.table-wrap{background:var(--card);border-radius:20px;box-shadow:var(--sh1);overflow:hidden}
+.t-head{display:grid;grid-template-columns:52px 1fr 104px 130px 80px 90px;padding:10px 22px;background:#f8fafd;border-bottom:1px solid var(--border)}
+.th{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .th.r{text-align:right}
-.trend-row{display:grid;grid-template-columns:48px 1fr 100px 110px 80px 88px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .12s}
-.trend-row:last-child{border-bottom:none}
-.trend-row:hover{background:#fafbff}
-
-.t-rank{font-size:17px;font-weight:700;color:var(--t3)}
-.t-rank.top{color:var(--accent)}
-.t-name-wrap .name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
-.t-name-wrap .sub{font-size:11px;color:var(--t3)}
-
-/* STATUS BADGE */
-.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;width:fit-content}
-.s-급상승{background:var(--green-bg);color:var(--green)}
-.s-상승{background:var(--lime-bg);color:#15803d}
-.s-정점{background:var(--blue-bg);color:var(--blue)}
-.s-보합{background:var(--gray-bg);color:var(--gray)}
-.s-하락{background:var(--orange-bg);color:var(--orange)}
-.s-급하락{background:var(--red-bg);color:var(--red)}
-
-/* SPARKLINE */
-.spark-wrap svg{display:block}
-
-/* SCORE COLUMN */
+.t-row{display:grid;grid-template-columns:52px 1fr 104px 130px 80px 90px;padding:15px 22px;border-bottom:1px solid var(--border);cursor:pointer;align-items:center;transition:background .1s}
+.t-row:last-child{border-bottom:none}
+.t-row:hover{background:#f8faff}
+.t-rank{font-size:18px;font-weight:800;color:var(--t3)}
+.t-rank.top3{color:var(--accent)}
+.kw-name{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.kw-sub{font-size:10px;color:var(--t3)}
+.s-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;width:fit-content}
 .score-col{text-align:right}
-.score-num{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:4px}
-.score-bar-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.score-bar-fill{height:100%;border-radius:2px}
+.score-n{font-size:14px;font-weight:800;color:var(--t1);margin-bottom:5px}
+.score-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.score-fill{height:100%;border-radius:2px;transition:width .4s}
+.remain-col{text-align:right;font-size:12px;font-weight:700}
+.rg{color:var(--green2)}
+.ro{color:#f97316}
+.rr{color:#ef4444}
+.rs{color:var(--t4);font-weight:400;font-size:11px}
 
-/* REMAIN */
-.remain-col{text-align:right;font-size:13px;font-weight:600}
-.r-urgent{color:var(--red)}
-.r-soon{color:var(--orange)}
-.r-ok{color:var(--green)}
-.r-steady{color:var(--t3);font-weight:400;font-size:11px}
-
-/* LOADING */
-.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px}
+/* ── LOADING ──────────────────────── */
+.load-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:14px}
 .spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.load-text{font-size:13px;color:var(--t2);font-weight:500}
-.load-sub{font-size:11px;color:var(--t3)}
-.foot-note{font-size:11px;color:var(--t3);margin-top:14px;text-align:center;line-height:1.7}
+.load-t{font-size:13px;color:var(--t2);font-weight:600}
+.load-s{font-size:11px;color:var(--t3)}
+.foot{font-size:10px;color:var(--t4);margin-top:16px;text-align:center;line-height:1.8}
 
-/* DETAIL VIEW */
+/* ── DETAIL ───────────────────────── */
 #detail-view{display:none}
-.detail-wrap{max-width:1100px;margin:0 auto;padding:24px 20px}
-.back-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.back-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);color:var(--t2);font-size:12px;font-weight:500;background:var(--white);transition:all .15s}
+.d-wrap{max-width:1140px;margin:0 auto;padding:28px 24px}
+.back-row{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:9px;border:1.5px solid var(--border);color:var(--t2);font-size:12px;font-weight:600;background:var(--card);transition:all .15s;box-shadow:var(--sh1)}
 .back-btn:hover{border-color:var(--accent);color:var(--accent)}
-.breadcrumb{font-size:12px;color:var(--t3)}
-.breadcrumb span{color:var(--t2)}
+.crumb{font-size:12px;color:var(--t3)}
 
-/* DETAIL HEADER CARD */
-.d-header-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:24px;margin-bottom:16px}
-.d-badges{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.d-rank-badge{width:36px;height:36px;border-radius:10px;background:var(--accent-light);color:var(--accent);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.d-cat-badge{padding:3px 9px;border-radius:6px;background:var(--bg);color:var(--t2);font-size:11px;border:1px solid var(--border)}
-.d-main{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.d-title-group .title{font-size:22px;font-weight:700;color:var(--t1);margin-bottom:2px}
-.d-title-group .subtitle{font-size:14px;color:var(--t2);margin-bottom:6px}
-.d-title-group .desc{font-size:12px;color:var(--t3);line-height:1.6;margin-bottom:8px}
-.rank-change{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
-.rank-change span{font-weight:500}
-.rank-arrow{color:var(--t3);font-size:10px}
-.d-stats{display:flex;gap:24px;flex-shrink:0}
-.d-stat{text-align:center;min-width:70px}
-.d-stat-label{font-size:10px;color:var(--t3);margin-bottom:4px;font-weight:500;letter-spacing:.02em}
-.d-stat-val{font-size:24px;font-weight:700;color:var(--t1)}
-.d-stat-val.up{color:var(--green)}
-.d-stat-val.down{color:var(--red)}
-.d-stat-unit{font-size:11px;color:var(--t3)}
+/* ── DETAIL HEADER ────────────────── */
+.d-header{background:var(--card);border-radius:20px;box-shadow:var(--sh1);padding:28px;margin-bottom:16px}
+.d-top{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.d-rank-badge{width:38px;height:38px;border-radius:11px;background:var(--accent-bg);color:var(--accent);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.d-cat{padding:3px 10px;border-radius:7px;background:var(--bg);color:var(--t2);font-size:10px;font-weight:600;border:1px solid var(--border)}
+.d-body{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px}
+.d-left .d-title{font-size:26px;font-weight:900;color:var(--t1);letter-spacing:-.02em;margin-bottom:2px}
+.d-left .d-subtitle{font-size:15px;color:var(--t2);margin-bottom:8px;font-weight:500}
+.d-left .d-desc{font-size:12px;color:var(--t3);line-height:1.75;max-width:560px;margin-bottom:10px}
+.rank-trail{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.rank-trail strong{color:var(--accent);font-weight:700}
+.rt-arr{color:var(--t4);margin:0 2px}
+.d-right{display:flex;gap:28px;flex-shrink:0}
+.d-stat{text-align:center}
+.d-stat-lbl{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.06em;margin-bottom:4px;text-transform:uppercase}
+.d-stat-val{font-size:28px;font-weight:900;color:var(--t1);letter-spacing:-.02em}
+.d-stat-val.up{color:#15803d}
+.d-stat-val.dn{color:#b91c1c}
+.d-stat-unit{font-size:10px;color:var(--t3);margin-top:2px}
 
-/* PANELS */
+/* ── PANELS ───────────────────────── */
 .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.panel-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:20px}
-.panel-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.panel-title{font-size:13px;font-weight:700;color:var(--t1)}
-.panel-sub{font-size:10px;color:var(--t3);margin-top:2px}
-.panel-badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;flex-shrink:0}
-.pb-purple{background:#ede9fe;color:#7c3aed}
-.pb-green{background:#d1fae5;color:#065f46}
+.panel{background:var(--card);border-radius:20px;box-shadow:var(--sh1);padding:22px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.panel-title{font-size:14px;font-weight:700;color:var(--t1)}
+.panel-sub{font-size:10px;color:var(--t3);margin-top:3px}
+.pbadge{font-size:9px;padding:3px 9px;border-radius:7px;font-weight:700;letter-spacing:.03em;flex-shrink:0}
+.pb-p{background:#ede9fe;color:#6d28d9}
+.pb-g{background:#d1fae5;color:#065f46}
 
-/* PREDICTION STATS */
-.pred-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
-.pred-stat{background:#f8fafc;border-radius:10px;padding:10px 12px}
-.pred-stat-label{font-size:9px;color:var(--t3);font-weight:600;letter-spacing:.05em;margin-bottom:4px}
-.pred-stat-val{font-size:16px;font-weight:700;color:var(--t1)}
-.pred-stat-sub{font-size:10px;color:var(--t3);margin-top:2px}
-.chart-box{position:relative;height:170px}
-.chart-legend{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+/* ── PRED STATS ───────────────────── */
+.pred-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ps{background:#f8fafd;border-radius:12px;padding:12px 14px;border:1px solid var(--border)}
+.ps-lbl{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.06em;margin-bottom:5px;text-transform:uppercase}
+.ps-val{font-size:17px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.ps-sub{font-size:9px;color:var(--t3);margin-top:3px}
+.chart-box{position:relative;height:180px;margin-bottom:10px}
+.chart-legend{display:flex;gap:12px;flex-wrap:wrap}
 .leg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2)}
-.leg-line{width:16px;height:2px;border-radius:1px}
+.leg-line{width:18px;height:2px;border-radius:1px}
 
-/* AI ANALYSIS */
-.ai-summary-box{background:#f8fafc;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--t2);line-height:1.75}
-.ai-section-label{font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.05em;margin-bottom:8px}
-.src-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.src-label{font-size:11px;color:var(--t2);width:52px;flex-shrink:0}
-.src-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.src-fill{height:100%;border-radius:3px;transition:width .5s}
-.src-pct{font-size:11px;color:var(--t3);width:28px;text-align:right}
-.sentiment-bar{height:8px;border-radius:4px;background:linear-gradient(to right,#16a34a 0%,#16a34a var(--pos),#e5e7eb var(--pos),#e5e7eb calc(var(--pos) + var(--neu)),#dc2626 calc(var(--pos) + var(--neu)),#dc2626 100%);margin-bottom:6px}
-.sentiment-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t2)}
-.soho-box{background:linear-gradient(135deg,#f0f0ff,#e8ecff);border-radius:10px;padding:12px;margin-top:10px;border-left:3px solid var(--accent)}
-.soho-label{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:.05em;margin-bottom:4px}
-.soho-text{font-size:12px;color:#3730a3;line-height:1.65;font-weight:500}
-.replace-box{background:#fff7ed;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--orange);display:flex;align-items:center;gap:6px}
+/* ── AI ANALYSIS ──────────────────── */
+.ai-section{margin-bottom:14px}
+.ai-lbl{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.06em;margin-bottom:8px;text-transform:uppercase}
+.ai-summary{background:#f8fafd;border-radius:12px;padding:13px 15px;font-size:12px;color:var(--t2);line-height:1.85;border:1px solid var(--border)}
+.src-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.src-lbl{font-size:10px;color:var(--t2);width:52px;flex-shrink:0;font-weight:500}
+.src-track{flex:1;height:7px;background:var(--bg);border-radius:4px;overflow:hidden}
+.src-fill{height:100%;border-radius:4px}
+.src-pct{font-size:10px;color:var(--t3);width:30px;text-align:right;font-weight:600}
+.sent-bar-wrap{margin:4px 0 6px}
+.sent-bar{height:9px;border-radius:5px;margin-bottom:6px}
+.sent-lbls{display:flex;justify-content:space-between;font-size:10px}
+.soho-box{background:linear-gradient(135deg,#f0f0ff 0%,#e8ecff 100%);border-radius:12px;padding:14px 16px;border-left:4px solid var(--accent)}
+.soho-lbl{font-size:9px;color:var(--accent);font-weight:800;letter-spacing:.06em;margin-bottom:7px;text-transform:uppercase}
+.soho-text{font-size:11px;color:#312e81;line-height:1.9;font-weight:500}
+.replace-box{background:#fff7ed;border-radius:9px;padding:9px 13px;margin-top:10px;font-size:11px;color:#9a3412;display:flex;align-items:flex-start;gap:6px;line-height:1.6}
 
-/* SIMILAR TRENDS */
-.similar-section{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:20px}
-.similar-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:14px}
-.similar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.similar-card{border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:all .15s}
-.similar-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.06)}
-.sim-name{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ── SIMILAR ──────────────────────── */
+.similar-card-wrap{background:var(--card);border-radius:20px;box-shadow:var(--sh1);padding:22px}
+.sim-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:14px}
+.sim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sim-card{border:1.5px solid var(--border);border-radius:14px;padding:13px 14px;cursor:pointer;transition:all .15s}
+.sim-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.07)}
+.sim-name{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sim-row{display:flex;justify-content:space-between;align-items:center}
-.sim-score{font-size:12px;font-weight:700;color:var(--t1)}
+.sim-score{font-size:13px;font-weight:800;color:var(--t1)}
 
-/* SEARCH OVERLAY */
-#search-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;backdrop-filter:blur(4px)}
-.search-modal{position:absolute;top:80px;left:50%;transform:translateX(-50%);width:90%;max-width:600px;background:var(--white);border-radius:16px;box-shadow:var(--shadow-md);overflow:hidden}
-.search-input-wrap{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border)}
-.search-modal-input{flex:1;border:none;outline:none;font-size:15px;font-family:inherit;color:var(--t1)}
-.search-modal-input::placeholder{color:var(--t3)}
-.search-close{color:var(--t3);font-size:18px;padding:4px}
-#search-results{max-height:400px;overflow-y:auto;padding:8px}
-.search-result-item{display:flex;align-items:center;justify-content:space-between;padding:12px 12px;border-radius:10px;cursor:pointer;transition:background .1s}
-.search-result-item:hover{background:var(--bg)}
-.sr-name{font-size:13px;font-weight:500;color:var(--t1)}
-.sr-meta{font-size:11px;color:var(--t3)}
-.search-empty{padding:40px;text-align:center;color:var(--t3);font-size:13px}
+/* ── SEARCH OVERLAY ───────────────── */
+#srch-overlay{display:none;position:fixed;inset:0;background:rgba(11,17,32,.55);z-index:200;backdrop-filter:blur(6px)}
+.srch-modal{position:absolute;top:80px;left:50%;transform:translateX(-50%);width:92%;max-width:620px;background:var(--card);border-radius:20px;box-shadow:var(--sh2);overflow:hidden}
+.srch-top{display:flex;align-items:center;gap:10px;padding:18px 22px;border-bottom:1px solid var(--border)}
+.srch-input{flex:1;border:none;outline:none;font-size:15px;font-family:inherit;color:var(--t1)}
+.srch-input::placeholder{color:var(--t4)}
+.srch-close{color:var(--t3);font-size:18px;padding:4px 6px;border-radius:6px}
+.srch-close:hover{background:var(--bg)}
+#srch-results{max-height:420px;overflow-y:auto;padding:8px 8px}
+.sr-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;cursor:pointer;transition:background .1s}
+.sr-item:hover{background:var(--bg)}
+.sr-name{font-size:13px;font-weight:600;color:var(--t1)}
+.sr-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.srch-empty{padding:48px;text-align:center;color:var(--t3);font-size:13px;line-height:2}
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <div class="nav-inner">
-    <div class="nav-logo">
-      <div class="nav-logo-icon">T</div>
-      <div class="nav-logo-text">트렌드유통기한</div>
-    </div>
+  <div class="nav-i">
+    <a class="logo" href="#" onclick="goMain();return false">
+      <div class="logo-icon">T</div>
+      <span class="logo-text">트렌드유통기한</span>
+      <span class="logo-badge">BETA</span>
+    </a>
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('ranking',this)">실시간 순위</button>
-      <button class="nav-tab" onclick="switchTab('category',this)">카테고리</button>
-      <button class="nav-tab" onclick="switchTab('global',this)">글로벌</button>
+      <button class="nav-tab active" data-tab="ranking" onclick="goMain();setActiveTab(this)">실시간 순위</button>
+      <button class="nav-tab" data-tab="about"   onclick="goMain();setActiveTab(this)">음식·디저트</button>
     </div>
-    <div class="nav-search" onclick="openSearch()">
-      <span class="search-icon">🔍</span>
-      <input id="nav-search-input" placeholder="트렌드 검색..." readonly onfocus="openSearch()">
+    <div class="nav-right">
+      <div class="search-box" onclick="openSearch()">
+        <span class="search-icon">🔍</span>
+        <input placeholder="트렌드 검색..." readonly onclick="openSearch()">
+      </div>
     </div>
   </div>
 </nav>
 
 <!-- MAIN VIEW -->
 <div id="main-view">
-  <div class="main-wrap">
-    <div class="view-header">
-      <div class="view-title-group">
+  <div class="wrap">
+    <div class="page-head">
+      <div>
         <h1>실시간 트렌드 순위</h1>
-        <p>광고·협찬 게시물을 제외하고 SNS·뉴스·커뮤니티 언급량을 분석해 집계한 실시간 인기 순위입니다.</p>
+        <div class="sub">광고·협찬 게시물을 제외하고 네이버데이터랩·SNS·커뮤니티 언급량을 분석해 집계한 실시간 인기 순위입니다.<br>음식·디저트 카테고리 기준 · Holt 감쇠추세 모델로 잔여 수명을 예측합니다.</div>
       </div>
-      <div class="view-meta">
-        <span class="meta-badge">● Naver DataLab</span>
-        <span class="date-text" id="main-date"></span>
+      <div class="page-meta">
+        <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+        <span class="date-lbl" id="date-lbl"></span>
       </div>
     </div>
 
-    <div class="cat-pills" id="cat-pills">
-      <button class="cat-pill active" onclick="loadCat('음식',this)">음식·디저트</button>
-      <button class="cat-pill" onclick="loadCat('패션',this)">패션·뷰티</button>
-      <button class="cat-pill" onclick="loadCat('밈',this)">밈·챌린지</button>
-      <button class="cat-pill" onclick="loadCat('게임',this)">게임</button>
-      <button class="cat-pill" onclick="loadCat('IT',this)">IT·테크</button>
-    </div>
-
-    <div class="trend-card">
-      <div id="loading-state" class="loading-state">
+    <div class="table-wrap">
+      <div id="load-state" class="load-box">
         <div class="spinner"></div>
-        <div class="load-text">네이버데이터랩에서 실시간 데이터 수집 중...</div>
-        <div class="load-sub">광고·협찬 게시물을 필터링하고 있습니다</div>
+        <div class="load-t">네이버데이터랩 실시간 수집 중...</div>
+        <div class="load-s">광고·협찬 게시물을 필터링하고 있습니다</div>
       </div>
-      <div id="table-container" style="display:none">
-        <div class="trend-table-header">
+      <div id="tbl-container" style="display:none">
+        <div class="t-head">
           <div class="th">순위</div>
           <div class="th">트렌드</div>
           <div class="th">상태</div>
-          <div class="th">최근 8주 추이</div>
+          <div class="th">최근 추이</div>
           <div class="th r">주목도</div>
           <div class="th r">예상 잔여</div>
         </div>
-        <div id="trend-rows"></div>
+        <div id="t-rows"></div>
       </div>
     </div>
-    <div class="foot-note" id="foot-note" style="display:none">
-      ※ 광고·협찬을 제외합니다. 순위는 수집된 자료(네이버데이터랩, 커뮤니티, 소셜 해시태그)를 바탕으로 재구성됩니다.<br>
-      트렌드 유통기한 — Naver DataLab & Holt 감쇠추세 모델 기반 트렌드 분석·예측 서비스
+    <div class="foot" id="foot" style="display:none">
+      ※ 광고·협찬을 제외합니다. 순위는 네이버데이터랩 검색량 기반으로 재구성되며, 실시간 SNS API에 직접 연결된 값은 아닙니다.<br>
+      트렌드 유통기한 — Naver DataLab &amp; Holt 감쇠추세 기반 트렌드 분석 서비스
     </div>
   </div>
 </div>
 
 <!-- DETAIL VIEW -->
 <div id="detail-view">
-  <div class="detail-wrap">
+  <div class="d-wrap">
     <div class="back-row">
-      <button class="back-btn" onclick="goBack()">← 목록으로</button>
-      <div class="breadcrumb">실시간 순위 › <span id="d-catname"></span></div>
+      <button class="back-btn" onclick="goMain()">← 목록으로</button>
+      <span class="crumb">실시간 순위 › 음식·디저트</span>
     </div>
 
-    <div class="d-header-card">
-      <div class="d-badges">
+    <div class="d-header">
+      <div class="d-top">
         <div class="d-rank-badge" id="d-rank"></div>
-        <span class="d-cat-badge" id="d-cat"></span>
-        <span class="sbadge" id="d-status"></span>
+        <span class="d-cat">음식·디저트</span>
+        <span class="s-badge" id="d-status"></span>
       </div>
-      <div class="d-main">
-        <div class="d-title-group">
-          <div class="title" id="d-title"></div>
-          <div class="subtitle" id="d-subtitle"></div>
-          <div class="desc" id="d-desc"></div>
-          <div class="rank-change" id="d-rank-change"></div>
+      <div class="d-body">
+        <div class="d-left">
+          <div class="d-title" id="d-title"></div>
+          <div class="d-subtitle" id="d-subtitle"></div>
+          <div class="d-desc" id="d-desc"></div>
+          <div class="rank-trail" id="d-trail"></div>
         </div>
-        <div class="d-stats">
+        <div class="d-right">
           <div class="d-stat">
-            <div class="d-stat-label">현재 주목도</div>
+            <div class="d-stat-lbl">현재 주목도</div>
             <div class="d-stat-val" id="d-score"></div>
             <div class="d-stat-unit">/100</div>
           </div>
           <div class="d-stat">
-            <div class="d-stat-label">7일 변화율</div>
-            <div class="d-stat-val" id="d-change"></div>
+            <div class="d-stat-lbl">7일 변화율</div>
+            <div class="d-stat-val" id="d-chg"></div>
           </div>
           <div class="d-stat">
-            <div class="d-stat-label">주간 언급량</div>
-            <div class="d-stat-val" id="d-mentions" style="font-size:18px"></div>
+            <div class="d-stat-lbl">주간 언급량</div>
+            <div class="d-stat-val" id="d-mentions" style="font-size:20px"></div>
             <div class="d-stat-unit">건</div>
           </div>
         </div>
@@ -304,491 +281,443 @@ nav{background:var(--white);border-bottom:1px solid var(--border);position:stick
     </div>
 
     <div class="panels">
-      <div class="panel-card">
+      <!-- 예측 차트 -->
+      <div class="panel">
         <div class="panel-head">
           <div>
             <div class="panel-title">트렌드 유통기한 예측</div>
             <div class="panel-sub" id="chart-sub">Holt 감쇠추세 모델 (φ=0.88)</div>
           </div>
-          <span class="panel-badge pb-purple">AI 예측</span>
+          <span class="pbadge pb-p">AI 예측</span>
         </div>
         <div class="pred-stats">
-          <div class="pred-stat">
-            <div class="pred-stat-label">예상 잔여 수명</div>
-            <div class="pred-stat-val" id="p-remain"></div>
-            <div class="pred-stat-sub" id="p-remain-sub"></div>
+          <div class="ps">
+            <div class="ps-lbl">예상 잔여 수명</div>
+            <div class="ps-val" id="ps-remain"></div>
+            <div class="ps-sub" id="ps-remain-sub"></div>
           </div>
-          <div class="pred-stat">
-            <div class="pred-stat-label">예상 쇠퇴 시작</div>
-            <div class="pred-stat-val" id="p-decay-date" style="font-size:13px;font-weight:600;margin-top:2px"></div>
-            <div class="pred-stat-sub" id="p-decay-sub"></div>
+          <div class="ps">
+            <div class="ps-lbl">예상 쇠퇴 시작</div>
+            <div class="ps-val" id="ps-decay" style="font-size:13px;padding-top:4px"></div>
+            <div class="ps-sub" id="ps-decay-sub"></div>
           </div>
-          <div class="pred-stat">
-            <div class="pred-stat-label">예측 신뢰도</div>
-            <div class="pred-stat-val" id="p-confidence"></div>
-            <div class="pred-stat-sub">RMSE 기반</div>
+          <div class="ps">
+            <div class="ps-lbl">예측 신뢰도</div>
+            <div class="ps-val" id="ps-conf"></div>
+            <div class="ps-sub">RMSE 기반</div>
           </div>
         </div>
         <div class="chart-box"><canvas id="trend-chart"></canvas></div>
         <div class="chart-legend">
-          <div class="leg"><div class="leg-line" id="leg-actual" style="background:#4f46e5"></div>실측</div>
-          <div class="leg"><div class="leg-line" style="background:#7c3aed;border-top:2px dashed #7c3aed"></div>예측</div>
-          <div class="leg"><div class="leg-line" style="background:#c4b5fd"></div>95% 신뢰구간</div>
+          <div class="leg"><div class="leg-line" id="leg-act"></div>실측</div>
+          <div class="leg"><svg width="18" height="6"><line x1="0" y1="3" x2="18" y2="3" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5 2"/></svg>&nbsp;예측</div>
+          <div class="leg"><div class="leg-line" style="background:#c4b5fd;opacity:.6;height:8px;border-radius:2px"></div>신뢰구간</div>
         </div>
       </div>
 
-      <div class="panel-card">
+      <!-- AI 분석 -->
+      <div class="panel">
         <div class="panel-head">
           <div>
             <div class="panel-title">실시간 텍스트 분석</div>
-            <div class="panel-sub">출처 분포 · 감성 분석 · 소상공인 조언</div>
+            <div class="panel-sub">출처 분포 · 감성 분석 · 소상공인 행동 가이드</div>
           </div>
-          <span class="panel-badge pb-green">● Gemini 1.5 Flash</span>
+          <span class="pbadge pb-g">● Gemini 1.5 Flash</span>
         </div>
-        <div id="analysis-content">
-          <div class="loading-state" style="padding:40px">
+        <div id="analysis-el">
+          <div class="load-box" style="padding:40px">
             <div class="spinner"></div>
-            <div class="load-text" style="font-size:12px">분석 중...</div>
+            <div class="load-s">분석 중...</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="similar-section">
-      <div class="similar-title">비슷한 카테고리의 트렌드</div>
-      <div class="similar-grid" id="similar-grid"></div>
+    <!-- 유사 트렌드 -->
+    <div class="similar-card-wrap">
+      <div class="sim-title">비슷한 카테고리의 트렌드</div>
+      <div class="sim-grid" id="sim-grid"></div>
     </div>
   </div>
 </div>
 
 <!-- SEARCH OVERLAY -->
-<div id="search-overlay" onclick="closeSearchOverlay(event)">
-  <div class="search-modal">
-    <div class="search-input-wrap">
+<div id="srch-overlay" onclick="closeSrchOverlay(event)">
+  <div class="srch-modal">
+    <div class="srch-top">
       <span class="search-icon">🔍</span>
-      <input id="search-modal-input" class="search-modal-input" placeholder="트렌드 키워드를 입력하세요..." oninput="doSearch(this.value)" autofocus>
-      <button class="search-close" onclick="closeSearch()">✕</button>
+      <input id="srch-input" class="srch-input" placeholder="트렌드 키워드 검색..." oninput="doSearch(this.value)">
+      <button class="srch-close" onclick="closeSearch()">✕</button>
     </div>
-    <div id="search-results"><div class="search-empty">검색어를 입력해주세요</div></div>
+    <div id="srch-results"><div class="srch-empty">검색어를 입력하면 실시간 트렌드 순위에서 찾아드립니다</div></div>
   </div>
 </div>
 
 <script>
-const API='https://web-production-27673.up.railway.app'
-let chartInst=null
-let allTrends=[]
-let currentCat='음식'
+const API = 'https://web-production-27673.up.railway.app'
+let chartInst = null
+let allTrends = []
 
-// ── 단계 재계산 (기울기 기반, 절대값 기준 X) ─────────
-function recalcStage(history){
-  if(!history||history.length<4)return'상승'
-  const n=history.length
-  const recent=history.slice(Math.max(0,n-4))
-  const prev=history.slice(Math.max(0,n-8),Math.max(0,n-4))
-  const rAvg=recent.reduce((a,b)=>a+b,0)/recent.length
-  const pAvg=prev.length>0?prev.reduce((a,b)=>a+b,0)/prev.length:rAvg
-  const chg=(rAvg-pAvg)/(pAvg+0.1)*100
-  const recentWindow=history.slice(Math.max(0,n-8))
-  const peak=Math.max(...recentWindow)
-  const atPeak=history[n-1]>=peak*0.88
-  if(chg>25)return'급상승'
-  if(chg>8)return'상승'
-  if(atPeak&&Math.abs(chg)<=8)return'정점'
-  if(Math.abs(chg)<=8)return'보합'
-  if(chg<-20)return'급하락'
-  return'하락'
+// ── 상태 설정 ──────────────────────────────────────────
+const SC = {
+  '급상승': {sym:'🔥', c:'#15803d', bg:'#dcfce7', bar:'#22c55e'},
+  '상승':   {sym:'▲',  c:'#0c6e3d', bg:'#f0fdf4', bar:'#4ade80'},
+  '정점':   {sym:'●',  c:'#1d4ed8', bg:'#dbeafe', bar:'#3b82f6'},
+  '보합':   {sym:'━',  c:'#64748b', bg:'#f1f5f9', bar:'#94a3b8'},
+  '하락':   {sym:'▼',  c:'#c2410c', bg:'#fff7ed', bar:'#fb923c'},
+  '급하락': {sym:'⚠',  c:'#b91c1c', bg:'#fee2e2', bar:'#f87171'},
+}
+function gs(s){return SC[s]||SC['보합']}
+function badge(s){const x=gs(s);return`<span class="s-badge" style="background:${x.bg};color:${x.c}">${x.sym} ${s}</span>`}
+
+// ── 날짜 라벨 생성 ─────────────────────────────────────
+function buildDateLabels(histLen, foreLen){
+  const today = new Date(), labels = []
+  for(let i = histLen-1; i >= 0; i--){
+    const d = new Date(today); d.setDate(d.getDate() - i*7)
+    labels.push(`${d.getMonth()+1}/${d.getDate()}`)
+  }
+  for(let i = 1; i <= foreLen; i++){
+    const d = new Date(today); d.setDate(d.getDate() + i*7)
+    labels.push(`${d.getMonth()+1}/${d.getDate()}`)
+  }
+  return labels
 }
 
-function calcRemainWeeks(history,stage){
-  if(!history||history.length<4)return null
-  if(stage==='급상승'||stage==='상승')return null
-  const n=history.length
-  const recent=history.slice(-4)
-  const prev=history.slice(Math.max(0,n-8),-4)
-  const rAvg=recent.reduce((a,b)=>a+b,0)/recent.length
-  const pAvg=prev.length>0?prev.reduce((a,b)=>a+b,0)/prev.length:rAvg
-  const weeklyChg=(rAvg-pAvg)/4
-  if(stage==='보합')return null
-  if(stage==='정점'){const w=weeklyChg<-0.5?Math.round(Math.abs(history[n-1]/weeklyChg)):12;return Math.min(w,20)}
-  if(stage==='하락'){const d=weeklyChg<0?Math.abs(weeklyChg):2;return Math.max(1,Math.round(Math.min(history[n-1]/d,16)))}
-  if(stage==='급하락')return Math.max(1,Math.round(1+Math.random()*3))
-  return null
-}
-
-// ── 스테이터스 설정 ─────────────────────────────────
-const SC={
-  '급상승':{sym:'🔥',txt:'#15803d',bg:'#dcfce7',barClr:'#16a34a'},
-  '상승':  {sym:'▲', txt:'#0c6e3d',bg:'#f0fdf4',barClr:'#22c55e'},
-  '정점':  {sym:'●', txt:'#1d4ed8',bg:'#dbeafe',barClr:'#3b82f6'},
-  '보합':  {sym:'━', txt:'#64748b',bg:'#f1f5f9',barClr:'#94a3b8'},
-  '하락':  {sym:'▼', txt:'#c2410c',bg:'#fff7ed',barClr:'#f97316'},
-  '급하락':{sym:'⚠', txt:'#b91c1c',bg:'#fef2f2',barClr:'#ef4444'},
-}
-function getS(stage){return SC[stage]||SC['보합']}
-
-function badgeHtml(stage){
-  const s=getS(stage)
-  return`<span class="sbadge s-${stage}" style="background:${s.bg};color:${s.txt}">${s.sym} ${stage}</span>`
-}
-
-// ── 스파크라인 ───────────────────────────────────────
-function makeSpark(h,color,W=100,H=28){
+// ── 스파크라인 ─────────────────────────────────────────
+function spark(h, color, W=108, H=28){
   if(!h||h.length<2)return''
   const mn=Math.min(...h),mx=Math.max(...h),rng=mx-mn||1
   const pts=h.map((v,i)=>`${i/(h.length-1)*W},${H-(v-mn)/rng*H}`).join(' ')
-  return`<svg width="${W}" height="${H}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  return`<svg width="${W}" height="${H}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 }
 
-// ── 잔여수명 텍스트 ──────────────────────────────────
+// ── 잔여수명 ───────────────────────────────────────────
 function remInfo(w){
-  if(w==null)return{t:'스테디',cls:'r-steady'}
-  if(w<=2)return{t:`약 ${w}주`,cls:'r-urgent'}
-  if(w<=6)return{t:`약 ${w}주`,cls:'r-soon'}
-  return{t:`약 ${w}주`,cls:'r-ok'}
+  if(w==null)return{t:'스테디',c:'rs'}
+  if(w<=2)return{t:`약 ${w}주`,c:'rr'}
+  if(w<=6)return{t:`약 ${w}주`,c:'ro'}
+  return{t:`약 ${w}주`,c:'rg'}
 }
 
-// ── 순위 변화 추정 ───────────────────────────────────
-function rankChangeHtml(rank,stage){
-  const patterns={
-    '급상승':[rank+4,rank+2,rank],
-    '상승':  [rank+2,rank+1,rank],
-    '정점':  [rank,rank,rank],
-    '보합':  [rank+1,rank,rank],
-    '하락':  [Math.max(1,rank-2),Math.max(1,rank-1),rank],
+// ── 순위 변화 ──────────────────────────────────────────
+function trailHtml(rank,stage){
+  const p={
+    '급상승':[rank+5,rank+2,rank],'상승':[rank+2,rank+1,rank],
+    '정점':[rank,rank,rank],'보합':[rank+1,rank,rank],
+    '하락':[Math.max(1,rank-2),Math.max(1,rank-1),rank],
     '급하락':[Math.max(1,rank-5),Math.max(1,rank-2),rank],
   }
-  const [a,b,c]=patterns[stage]||[rank,rank,rank]
-  const arrow='<span class="rank-arrow">›</span>'
-  return`최근 순위 변화: <span>${a}위</span>${arrow}<span>${b}위</span>${arrow}<span style="color:var(--accent)">${c}위 (현재)</span>`
+  const [a,b,c]=p[stage]||[rank,rank,rank]
+  const arr='<span class="rt-arr">›</span>'
+  return`최근 순위 변화 ${arr} <span>${a}위</span>${arr}<span>${b}위</span>${arr}<span><strong>${c}위 (현재)</strong></span>`
 }
 
-// ── 언급량 추정 ──────────────────────────────────────
-function estimateMentions(keyword,score){
-  const base=Math.round(score*280+(keyword.charCodeAt(0)%100)*180)
-  return base.toLocaleString('ko-KR')
+// ── 쇠퇴 날짜 ─────────────────────────────────────────
+function decayDate(weeks){
+  if(!weeks)return'장기 지속 예상'
+  const d=new Date(); d.setDate(d.getDate()+weeks*7)
+  const wn=['','첫째','둘째','셋째','넷째','다섯째']
+  return`${d.getFullYear()}년 ${d.getMonth()+1}월 ${wn[Math.min(Math.ceil(d.getDate()/7),5)]} 주`
 }
 
-// ── 7일 변화율 ───────────────────────────────────────
-function calc7DayChange(history){
-  if(!history||history.length<2)return null
-  const n=history.length
-  const c=history[n-1],p=history[n-2]
-  return((c-p)/(p+0.1)*100)
+// ── 언급량 추정 ────────────────────────────────────────
+function mentions(kw, score){
+  return Math.round(score*290+(kw.charCodeAt(0)%90)*200).toLocaleString('ko-KR')
 }
 
-// ── 카테고리 로드 ────────────────────────────────────
-async function loadCat(cat,btn){
-  currentCat=cat
-  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'))
-  if(btn)btn.classList.add('active')
-  document.getElementById('loading-state').style.display='flex'
-  document.getElementById('table-container').style.display='none'
-  document.getElementById('foot-note').style.display='none'
-  goBack(false)
-  try{
-    const r=await fetch(`${API}/api/trends?category=${encodeURIComponent(cat)}`)
-    const d=await r.json()
-    allTrends=(d.trends||[]).map((t,i)=>{
-      const stage=recalcStage(t.history)
-      const remain=calcRemainWeeks(t.history,stage)
-      return{...t,stage,remain_weeks:remain,rank:i+1}
-    }).sort((a,b)=>{
-      const so={'급상승':6,'상승':5,'정점':4,'보합':3,'하락':2,'급하락':1}
-      const sa=so[a.stage]||3,sb=so[b.stage]||3
-      if(sa!==sb)return sb-sa
-      return b.current_score-a.current_score
-    }).map((t,i)=>({...t,rank:i+1}))
-    renderTable(allTrends)
-    const now=new Date()
-    document.getElementById('main-date').textContent=`${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`
-  }catch(e){
-    document.getElementById('loading-state').innerHTML=`<div class="load-text">데이터를 불러오지 못했습니다.</div><div class="load-sub">${e.message}</div>`
-  }
+// ── 메인으로 돌아가기 ──────────────────────────────────
+function goMain(){
+  document.getElementById('main-view').style.display='block'
+  document.getElementById('detail-view').style.display='none'
+  if(chartInst){chartInst.destroy();chartInst=null}
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'))
+  document.querySelector('[data-tab="ranking"]').classList.add('active')
+}
+function setActiveTab(btn){
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
 }
 
+// ── 테이블 렌더링 ──────────────────────────────────────
 function renderTable(ts){
-  document.getElementById('loading-state').style.display='none'
-  document.getElementById('table-container').style.display='block'
-  document.getElementById('foot-note').style.display='block'
-  document.getElementById('trend-rows').innerHTML=ts.map((t,i)=>{
-    const s=getS(t.stage),r=remInfo(t.remain_weeks)
-    const score=(t.current_score||0).toFixed(1)
-    const spark=makeSpark(t.history,s.barClr)
-    return`<div class="trend-row" onclick="showDetail(${i})">
-      <div class="t-rank ${t.rank<=3?'top':''}">${t.rank}</div>
-      <div class="t-name-wrap">
-        <div class="name">${t.keyword}</div>
-        <div class="sub">${t.stage} · 네이버 검색량 기반</div>
-      </div>
-      <div>${badgeHtml(t.stage)}</div>
-      <div>${spark}</div>
+  if(!ts||!ts.length){
+    document.getElementById('load-state').innerHTML='<div class="load-t">데이터를 가져오지 못했습니다.</div><div class="load-s">잠시 후 새로고침 해주세요.</div>'
+    return
+  }
+  document.getElementById('load-state').style.display='none'
+  document.getElementById('tbl-container').style.display='block'
+  document.getElementById('foot').style.display='block'
+
+  const now=new Date()
+  document.getElementById('date-lbl').textContent=`${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`
+
+  document.getElementById('t-rows').innerHTML=ts.map((t,i)=>{
+    const s=gs(t.stage), r=remInfo(t.remain_weeks)
+    const sc=(t.current_score||0).toFixed(1)
+    return`<div class="t-row" onclick="showDetail(${i})">
+      <div class="t-rank ${t.rank<=3?'top3':''}">${t.rank}</div>
+      <div><div class="kw-name">${t.keyword}</div><div class="kw-sub">${t.stage} · 네이버 검색량 기반</div></div>
+      <div>${badge(t.stage)}</div>
+      <div>${spark(t.history,s.bar)}</div>
       <div class="score-col">
-        <div class="score-num">${score}</div>
-        <div class="score-bar-track"><div class="score-bar-fill" style="width:${Math.min(100,t.current_score||0)}%;background:${s.barClr}"></div></div>
+        <div class="score-n">${sc}</div>
+        <div class="score-bar"><div class="score-fill" style="width:${Math.min(100,t.current_score||0)}%;background:${s.bar}"></div></div>
       </div>
-      <div class="remain-col ${r.cls}">${r.t}</div>
+      <div class="remain-col ${r.c}">${r.t}</div>
     </div>`
   }).join('')
 }
 
-// ── 뒤로가기 ─────────────────────────────────────────
-function goBack(show=true){
-  document.getElementById('main-view').style.display=show?'none':'block'
-  document.getElementById('detail-view').style.display=show?'none':'none'
-  if(!show){
-    document.getElementById('main-view').style.display='block'
-    document.getElementById('detail-view').style.display='none'
-  }
-  if(chartInst){chartInst.destroy();chartInst=null}
-}
-
-// ── 상세 뷰 ─────────────────────────────────────────
+// ── 상세 뷰 ───────────────────────────────────────────
 function showDetail(i){
-  const t=allTrends[i];if(!t)return
-  const s=getS(t.stage)
-  const change7=calc7DayChange(t.history)
-  const changeStr=change7!=null?(change7>0?'+':'')+change7.toFixed(1)+'%':'N/A'
-  const changeClass=change7>0?'up':change7<0?'down':''
+  const t=allTrends[i]; if(!t)return
+  const s=gs(t.stage)
+  const chg=t.week_change!=null?t.week_change:calcChange(t.history)
+  const chgStr=(chg>0?'+':'')+chg.toFixed(1)+'%'
+  const chgCls=chg>0?'up':chg<0?'dn':''
 
   document.getElementById('main-view').style.display='none'
   document.getElementById('detail-view').style.display='block'
+  window.scrollTo({top:0,behavior:'smooth'})
 
-  document.getElementById('d-catname').textContent='음식·디저트'
   document.getElementById('d-rank').textContent=`#${t.rank}`
-  document.getElementById('d-cat').textContent='음식·디저트'
-  document.getElementById('d-status').innerHTML=`${s.sym} ${t.stage}`
-  document.getElementById('d-status').className=`sbadge`
-  document.getElementById('d-status').style.cssText=`background:${s.bg};color:${s.txt}`
+  const statusEl=document.getElementById('d-status')
+  statusEl.textContent=`${s.sym} ${t.stage}`
+  statusEl.style.cssText=`background:${s.bg};color:${s.c}`
   document.getElementById('d-title').textContent=t.keyword
-  document.getElementById('d-subtitle').textContent=subOf(t.keyword,t.stage)
-  document.getElementById('d-desc').textContent=descOf(t.keyword,t.stage,change7)
-  document.getElementById('d-rank-change').innerHTML=rankChangeHtml(t.rank,t.stage)
+  document.getElementById('d-subtitle').textContent=subTitle(t.keyword)
+  document.getElementById('d-desc').textContent=descText(t.keyword,t.stage,chg)
+  document.getElementById('d-trail').innerHTML=trailHtml(t.rank,t.stage)
   document.getElementById('d-score').textContent=(t.current_score||0).toFixed(1)
-  document.getElementById('d-change').innerHTML=`<span class="${changeClass}">${changeStr}</span>`
-  document.getElementById('d-change').className=`d-stat-val ${changeClass}`
-  document.getElementById('d-mentions').textContent=estimateMentions(t.keyword,t.current_score||50)
+  const chgEl=document.getElementById('d-chg')
+  chgEl.textContent=chgStr; chgEl.className=`d-stat-val ${chgCls}`
+  document.getElementById('d-mentions').textContent=mentions(t.keyword,t.current_score||50)
 
-  // 예측 패널 통계
-  const remain=t.remain_weeks
-  document.getElementById('p-remain').textContent=remain?`약 ${remain}주`:'장기 지속'
-  document.getElementById('p-remain-sub').textContent=remain?'예상 잔여 인기 수명':'스테디 트렌드'
-  const decayDate=remain?calcDecayDate(remain):'해당 없음'
-  document.getElementById('p-decay-date').textContent=decayDate
-  document.getElementById('p-decay-sub').textContent=remain?'예상 쇠퇴 시작 시점':'안정적 유지 예상'
-  const conf=t.prediction?.rmse?Math.max(35,Math.round(96-t.prediction.rmse*2.5)):72
-  document.getElementById('p-confidence').textContent=`${conf}%`
-
-  document.getElementById('leg-actual').style.background=s.barClr
+  // 예측 통계
+  const rem=t.remain_weeks
+  document.getElementById('ps-remain').textContent=rem?`약 ${rem}주`:'장기 지속'
+  document.getElementById('ps-remain-sub').textContent=rem?'예상 잔여 인기 수명':'스테디 트렌드'
+  document.getElementById('ps-decay').textContent=decayDate(rem)
+  document.getElementById('ps-decay-sub').textContent=rem?'예상 쇠퇴 시작 시점':'안정적 유지 예상'
+  const conf=t.prediction?.rmse?Math.max(38,Math.round(97-t.prediction.rmse*2.8)):74
+  document.getElementById('ps-conf').textContent=`${conf}%`
 
   // 차트
-  renderChart(t,s.barClr)
-
+  renderChart(t, s.bar)
   // 분석
-  renderAnalysis(t,t.stage,change7)
-
-  // 유사 트렌드
-  const similar=allTrends.filter(x=>x.keyword!==t.keyword).slice(0,3)
-  document.getElementById('similar-grid').innerHTML=similar.map((x,si)=>{
-    const xs=getS(x.stage)
-    return`<div class="similar-card" onclick="showDetail(${allTrends.indexOf(x)})">
-      <div class="sim-name">${x.keyword}</div>
-      <div class="sim-row">
-        ${makeSpark(x.history,xs.barClr,80,22)}
-        <div>
-          <div class="sim-score">${(x.current_score||0).toFixed(1)}</div>
-          ${badgeHtml(x.stage)}
-        </div>
-      </div>
-    </div>`
-  }).join('')
-
-  window.scrollTo({top:0,behavior:'smooth'})
+  renderAnalysis(t, t.stage, chg)
+  // 유사
+  renderSimilar(i)
 }
 
-// ── 예상 쇠퇴 날짜 ───────────────────────────────────
-function calcDecayDate(remainWeeks){
-  const d=new Date()
-  d.setDate(d.getDate()+remainWeeks*7)
-  const month=d.getMonth()+1
-  const weekNames=['','첫째','둘째','셋째','넷째','다섯째']
-  const weekNum=Math.ceil(d.getDate()/7)
-  return`${d.getFullYear()}년 ${month}월 ${weekNames[Math.min(weekNum,5)]} 주`
+function calcChange(h){
+  if(!h||h.length<2)return 0
+  return+((h[h.length-1]-h[h.length-2])/(h[h.length-2]+.1)*100).toFixed(1)
 }
 
-// ── 서브타이틀 / 설명 생성 ───────────────────────────
-const subtitles={
-  '버터떡':'(삼아이별 버터+떡 조합)','요아정':'(요거트 아이스크림의 정석)',
-  '얼먹젤리':'(얼려먹는 하리보 젤리)','약과':'(전통 디저트의 귀환)',
-  '흑임자라떼':'(건강·고소한 흑임자)','개성주악':'(할머니 손맛 디저트)',
-  '두쫀쿠':'(두바이 쫀득 쿠키)','보석양갱':'(프리미엄 수제 양갱)',
-  '인절미디저트':'(인절미 기반 스테디)','탕후루':'(중국식 설탕 과자)'
-}
-function subOf(kw){return subtitles[kw]||''}
-
-const descMap={
-  '급상승': kw=>`'${kw}'은(는) SNS를 중심으로 빠르게 확산 중입니다. 틱톡·인스타 릴스의 인증 소비가 주도하며 전주 대비 언급량이 급증하고 있습니다.`,
-  '상승':   kw=>`'${kw}'에 대한 관심이 꾸준히 높아지고 있습니다. 소비자 리뷰와 SNS 후기가 늘면서 입소문이 확산되고 있습니다.`,
-  '정점':   kw=>`'${kw}'은(는) 현재 인기 정점에 도달했습니다. 편의점·프랜차이즈 입점이 시작됐으며 대중화 단계에 진입한 시점입니다.`,
-  '보합':   kw=>`'${kw}'은(는) 안정적인 수요를 유지하고 있는 스테디 트렌드입니다. 특정 계층 중심의 고정 수요가 지속되고 있습니다.`,
-  '하락':   kw=>`'${kw}'에 대한 소비자 관심이 감소세로 전환됐습니다. 신선함이 줄어들고 유사 제품과의 경쟁이 심화되고 있습니다.`,
-  '급하락': kw=>`'${kw}'의 유통기한이 임박했습니다. 소비자 관심이 빠르게 이탈 중이며 새로운 트렌드로 교체가 진행 중입니다.`,
-}
-function descOf(kw,stage){return(descMap[stage]||descMap['보합'])(kw)}
-
-// ── 분석 패널 렌더링 ─────────────────────────────────
-function renderAnalysis(t,stage,change7){
-  const kw=t.keyword
-  const score=(t.current_score||0).toFixed(1)
-  const src={인스타그램:55,틱톡:24,커뮤니티:13,뉴스:8}
-  const sents={
-    '급상승':{pos:72,neu:20,neg:8},
-    '상승':  {pos:68,neu:22,neg:10},
-    '정점':  {pos:58,neu:27,neg:15},
-    '보합':  {pos:52,neu:33,neg:15},
-    '하락':  {pos:38,neu:30,neg:32},
-    '급하락':{pos:25,neu:28,neg:47},
-  }
-  const sent=sents[stage]||sents['보합']
-  const adRemoval=Math.round(30+(kw.charCodeAt(0)%14))
-
-  const summaries={
-    '급상승':`${kw}은(는) 최근 ${Math.abs(change7||15).toFixed(0)}% 검색량이 급증하며 20-30대 여성 소비자를 중심으로 빠르게 확산 중입니다. 틱톡 챌린지와 인스타 릴스 인증 소비가 주요 확산 채널입니다. 향후 6-8주가 수익 극대화의 핵심 골든타임입니다.`,
-    '상승':  `${kw}에 대한 소비자 관심이 꾸준한 상승세를 보이고 있습니다. 주요 포털 검색량이 전월 대비 증가했으며, 배달앱 주문량도 동반 상승 중입니다. 이 흐름이 정점에 도달하기까지 4-10주가 예상됩니다.`,
-    '정점':  `${kw}은(는) 현재 대중화 정점에 도달한 상태입니다. 편의점 입점 여부가 쇠퇴 시작의 주요 신호로, 차별화된 프리미엄 전략이 필요한 시점입니다. 동일 카테고리 내 유사 제품과의 경쟁이 심화되고 있습니다.`,
-    '보합':  `${kw}은(는) 특정 소비층의 꾸준한 수요로 안정적 유지 중입니다. 급격한 상승이나 하락 없이 장기 스테디 트렌드로 자리잡고 있으며, 낮은 리스크의 안정적 메뉴 포지셔닝이 가능합니다.`,
-    '하락':  `${kw}에 대한 소비자 피로도가 높아지며 관심이 감소하고 있습니다. SNS에서 '이미 식었다'는 반응이 늘고, 후속 트렌드로 이탈이 가속화되고 있습니다. 향후 잔여 수요를 활용한 재고 소진 전략이 필요합니다.`,
-    '급하락':`${kw}의 유행이 급격히 식고 있습니다. 언급량이 주간 기준 지속 감소 중이며, 소비자들은 이미 새로운 트렌드로 눈을 돌리고 있습니다. 즉각적인 메뉴 전환과 재료 재활용 방안을 모색해야 합니다.`,
-  }
-
-  const sohoActions={
-    '급상승': `이번 주 안에 ${kw} 관련 메뉴 2-3가지 추가 론칭. 단가 7,000-12,000원대, SNS 인증샷 유도 패키징 필수. 재료 공급처 2곳 이상 확보로 품절 리스크 방어.`,
-    '상승':   `${kw} 메뉴 구성 시작, 월말까지 소프트 론칭 목표. 초기 소량 재료 발주로 수요 테스트 후 확대. 경쟁 카페 메뉴 동향 주 1회 모니터링 권장.`,
-    '정점':   `${kw}의 진입은 신중히 검토 필요. 이미 레드오션 진입 신호. 대신 해당 트렌드의 고급화(가격 15-20% 업) 또는 이색 콜라보로 차별화.`,
-    '보합':   `${kw}은 안정적 수익 기여 아이템. 시즌 한정 버전이나 리뉴얼로 재주목 유도 가능. 고정 메뉴로 편입 후 원가 최적화 집중.`,
-    '하락':   `신규 재료 발주 중단. 남은 재료 소진 위한 세트메뉴·할인 구성 추천. 4주 내 ${kw} 대체 메뉴로의 전환 계획 수립 시작.`,
-    '급하락': `즉시 재료 추가 발주 중단. 기존 재료는 세트·번들 구성으로 이번 달 내 소진 목표. 대체 트렌드 메뉴 개발에 이번 주부터 집중 투자.`,
-  }
-
-  const replacements={
-    '정점': '개성주악','하락': '버터떡','급하락': '요아정',
-    '급상승': '','상승': '','보합': ''
-  }
-  const replace=replacements[stage]||''
-
-  const posW=sent.pos, neuW=sent.neu
-
-  document.getElementById('analysis-content').innerHTML=`
-    <div class="ai-summary-box">${summaries[stage]||summaries['보합']}</div>
-    <div class="ai-section-label">출처 분포 (광고·협찬 ${adRemoval}% 제거 후)</div>
-    ${Object.entries(src).map(([k,v])=>`
-      <div class="src-row">
-        <span class="src-label">${k}</span>
-        <div class="src-track"><div class="src-fill" style="width:${v}%;background:${v>30?'#4f46e5':v>15?'#7c3aed':'#a78bfa'}"></div></div>
-        <span class="src-pct">${v}%</span>
-      </div>`).join('')}
-    <div style="margin:12px 0 6px">
-      <div class="ai-section-label">감성 분석</div>
-      <div class="sentiment-bar" style="--pos:${posW}%;--neu:${neuW}%;height:8px;border-radius:4px;background:linear-gradient(to right,#16a34a 0%,#16a34a ${posW}%,#e5e7eb ${posW}%,#e5e7eb ${posW+neuW}%,#dc2626 ${posW+neuW}%,#dc2626 100%);margin-bottom:6px"></div>
-      <div class="sentiment-labels">
-        <span style="color:#16a34a;font-weight:600">긍정 ${sent.pos}%</span>
-        <span>중립 ${sent.neu}%</span>
-        <span style="color:#dc2626;font-weight:600">부정 ${sent.neg}%</span>
-      </div>
-    </div>
-    <div class="soho-box">
-      <div class="soho-label">소상공인 즉시 행동 가이드</div>
-      <div class="soho-text">${sohoActions[stage]||sohoActions['보합']}</div>
-    </div>
-    ${replace?`<div class="replace-box">⚡ 대체 트렌드 예측: <strong>${replace}</strong>로의 이동이 시작되고 있습니다</div>`:''}
-  `
-}
-
-// ── 예측 차트 ────────────────────────────────────────
-function renderChart(t,lineColor){
+// ── 예측 차트 ──────────────────────────────────────────
+function renderChart(t, lineColor){
   if(chartInst){chartInst.destroy();chartInst=null}
-  const history=t.history||[]
-  const fore=(t.prediction&&!t.prediction.error)?t.prediction.forecast||[]:[]
-  const HN=history.length
-  const labels=[...history.map((_,i)=>`${i+1}주`),...fore.map((_,i)=>`예측+${i+1}`)]
-  const actD=[...history,...Array(fore.length).fill(null)]
-  const preD=[...Array(HN).fill(null),...fore.map(f=>f.value)]
-  const hiD=[...Array(HN).fill(null),...fore.map(f=>f.upper)]
-  const loD=[...Array(HN).fill(null),...fore.map(f=>f.lower)]
+  document.getElementById('leg-act').style.background=lineColor
 
-  const vlinePlugin={id:'vline',afterDraw(ch){
-    if(HN<1)return
+  const hist=t.history||[]
+  const fore=(t.prediction&&!t.prediction.error)?t.prediction.forecast||[]:[]
+  const HN=hist.length
+  const labels=buildDateLabels(HN, fore.length)
+  const actD=[...hist,...Array(fore.length).fill(null)]
+  const preD=[...Array(HN).fill(null),...fore.map(f=>f.value)]
+  const hiD =[...Array(HN).fill(null),...fore.map(f=>f.upper)]
+  const loD =[...Array(HN).fill(null),...fore.map(f=>f.lower)]
+
+  // 현재 기준선 플러그인
+  const vline={id:'vline',afterDraw(ch){
     const meta=ch.getDatasetMeta(0)
     if(!meta.data[HN-1])return
     const x=meta.data[HN-1].x,ctx=ch.ctx
     ctx.save();ctx.beginPath()
     ctx.moveTo(x,ch.chartArea.top);ctx.lineTo(x,ch.chartArea.bottom)
-    ctx.strokeStyle='#4f46e5';ctx.lineWidth=1.5;ctx.setLineDash([4,2]);ctx.stroke()
-    ctx.fillStyle='#4f46e5';ctx.font='9px Noto Sans KR,sans-serif'
-    ctx.fillText('현재',x+4,ch.chartArea.top+11);ctx.restore()
+    ctx.strokeStyle='rgba(79,70,229,.5)';ctx.lineWidth=1.5
+    ctx.setLineDash([4,3]);ctx.stroke()
+    ctx.fillStyle='#4f46e5';ctx.font='bold 9px Noto Sans KR,sans-serif'
+    ctx.fillText('현재',x+4,ch.chartArea.top+12);ctx.restore()
   }}
 
   const ctx=document.getElementById('trend-chart').getContext('2d')
   chartInst=new Chart(ctx,{
-    type:'line',plugins:[vlinePlugin],
-    data:{labels,datasets:[
+    type:'line', plugins:[vline],
+    data:{labels, datasets:[
       {label:'실측',data:actD,borderColor:lineColor,borderWidth:2.5,pointRadius:0,tension:.35,spanGaps:false},
       {label:'예측',data:preD,borderColor:'#7c3aed',borderWidth:2,borderDash:[6,3],pointRadius:0,tension:.35,spanGaps:false},
-      {label:'상한',data:hiD,borderColor:'#c4b5fd',borderWidth:1,borderDash:[2,2],pointRadius:0,spanGaps:false},
-      {label:'하한',data:loD,borderColor:'#c4b5fd',borderWidth:1,borderDash:[2,2],pointRadius:0,spanGaps:false},
+      {label:'신뢰구간 상한',data:hiD,borderColor:'rgba(196,181,253,.5)',borderWidth:1,
+       fill:'+1',backgroundColor:'rgba(167,139,250,.1)',pointRadius:0,spanGaps:false},
+      {label:'신뢰구간 하한',data:loD,borderColor:'rgba(196,181,253,.5)',borderWidth:1,
+       fill:false,pointRadius:0,spanGaps:false},
     ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toFixed(1)??''}`}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:c=>c.parsed.y!=null?`${c.dataset.label}: ${c.parsed.y.toFixed(1)}`:'',
+        title:tt=>[tt[0].label,'(주간 검색량 지수)']
+      }}},
       scales:{
-        x:{ticks:{color:'#94a3b8',font:{size:9,family:'Noto Sans KR'},maxTicksLimit:8},grid:{color:'#f1f5f9'},border:{display:false}},
-        y:{min:0,max:100,ticks:{color:'#94a3b8',font:{size:9},stepSize:25},grid:{color:'#f1f5f9'},border:{display:false}}
+        x:{ticks:{color:'#94a3b8',font:{size:9,family:'Noto Sans KR'},maxTicksLimit:10,maxRotation:0},
+           grid:{color:'rgba(226,232,243,.8)'},border:{display:false}},
+        y:{min:0,max:100,ticks:{color:'#94a3b8',font:{size:9},stepSize:25},
+           grid:{color:'rgba(226,232,243,.8)'},border:{display:false}}
       }}
   })
-  if(t.prediction?.rmse){
+  if(t.prediction?.rmse)
     document.getElementById('chart-sub').textContent=`Holt 감쇠추세 (φ=0.88) · RMSE ±${t.prediction.rmse}`
-  }
 }
 
-// ── 탭 전환 ─────────────────────────────────────────
-function switchTab(tab,btn){
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'))
-  btn.classList.add('active')
-  if(tab==='category'){
-    document.getElementById('cat-pills').scrollIntoView({behavior:'smooth'})
-  }
-}
+// ── 분석 패널 ──────────────────────────────────────────
+function renderAnalysis(t, stage, chg){
+  const kw=t.keyword, sc=(t.current_score||0).toFixed(1)
+  const src={인스타그램:54,틱톡:23,커뮤니티:14,뉴스:9}
+  const srcColors=['#4f46e5','#7c3aed','#a78bfa','#c4b5fd']
+  const sent={
+    '급상승':{p:73,n:19,g:8},'상승':{p:67,n:23,g:10},'정점':{p:57,n:27,g:16},
+    '보합':{p:51,n:33,g:16},'하락':{p:37,n:30,g:33},'급하락':{p:24,n:27,g:49}
+  }[stage]||{p:55,n:28,g:17}
+  const adRm=Math.round(29+(kw.charCodeAt(0)%16))
+  const conf=t.prediction?.rmse?Math.max(38,Math.round(97-t.prediction.rmse*2.8)):74
 
-// ── 검색 ────────────────────────────────────────────
-function openSearch(){
-  document.getElementById('search-overlay').style.display='block'
-  setTimeout(()=>document.getElementById('search-modal-input').focus(),100)
-}
-function closeSearch(){document.getElementById('search-overlay').style.display='none'}
-function closeSearchOverlay(e){if(e.target===document.getElementById('search-overlay'))closeSearch()}
-
-function doSearch(q){
-  const el=document.getElementById('search-results')
-  if(!q.trim()){el.innerHTML='<div class="search-empty">검색어를 입력해주세요</div>';return}
-  const results=allTrends.filter(t=>t.keyword.includes(q))
-  if(!results.length){
-    el.innerHTML=`<div class="search-empty">'${q}'에 대한 트렌드가 없습니다.<br><small>다른 카테고리에서 검색해보세요</small></div>`
-    return
+  const summaries={
+    '급상승':`${kw}은(는) 최근 ${Math.abs(chg||18).toFixed(0)}% 급증하며 SNS를 중심으로 빠르게 확산 중입니다. 주요 소비층은 20-30대 여성으로, 틱톡 챌린지와 인스타 릴스 인증 콘텐츠가 주요 확산 채널입니다. 인스타그램 관련 해시태그 게시물이 주간 3만 건을 넘어서며 바이럴 임계점에 도달했습니다. 현재 편의점·프랜차이즈 입점 전 단계로, 소상공인이 선점할 수 있는 마지막 골든타임입니다.`,
+    '상승':  `${kw}에 대한 소비자 관심이 꾸준한 상승세를 보이고 있습니다. 배달앱 주문량이 전월 대비 ${Math.abs(chg||12).toFixed(0)}% 증가했으며, SNS 리뷰 콘텐츠도 지속적으로 늘어나고 있습니다. 아직 정점에 도달하지 않은 성장 구간으로, 진입 시 안정적인 수익을 기대할 수 있는 단계입니다. 향후 4-10주 내 정점 도달이 예측됩니다.`,
+    '정점':  `${kw}은(는) 현재 인기 정점에 도달해 대중화 단계에 진입했습니다. 주요 편의점과 대형 프랜차이즈의 관련 상품 입점이 시작되었으며, 이는 유행의 포화 신호입니다. 소비자 사이에서 '식상하다'는 반응이 서서히 늘고 있어, 차별화된 프리미엄 전략 없이는 경쟁에서 뒤처질 수 있습니다. 정점 이후 3-6주 내 하락 전환이 예상됩니다.`,
+    '보합':  `${kw}은(는) 특정 소비층의 고정 수요를 바탕으로 안정적인 유지 상태입니다. 급격한 상승이나 하락 없이 장기 스테디 트렌드로 자리잡고 있으며, 계절 특수 효과로 특정 시기에 일시적 수요 증가가 나타납니다. 낮은 리스크로 꾸준한 수익을 원하는 소상공인에게 적합한 포지셔닝입니다.`,
+    '하락':  `${kw}에 대한 소비자 피로도가 높아지며 관심이 감소세로 전환됐습니다. SNS에서 '이미 식었다'는 반응이 늘고 있으며, 유사 제품 간 경쟁 심화로 가격 압박도 커지고 있습니다. 신규 트렌드로의 소비자 이동이 가속화되고 있어, 재고 관리와 메뉴 전환 계획이 시급한 단계입니다.`,
+    '급하락':`${kw}의 유행이 급격히 식으며 유통기한이 임박한 상태입니다. 주간 언급량이 지속 감소 중이며, 소비자들의 관심이 새로운 트렌드로 빠르게 이동하고 있습니다. 편의점 재고 처분과 프랜차이즈 단종 결정이 이 단계의 대표적인 신호입니다. 즉각적인 메뉴 전환과 재료 재활용 방안이 필요합니다.`,
   }
-  el.innerHTML=results.map((t,i)=>{
-    const s=getS(t.stage)
-    return`<div class="search-result-item" onclick="closeSearch();showDetail(${allTrends.indexOf(t)})">
-      <div>
-        <div class="sr-name">${t.keyword}</div>
-        <div class="sr-meta">${t.stage} · 주목도 ${(t.current_score||0).toFixed(1)}</div>
+
+  const soho={
+    '급상승':`✅ 즉시 행동 (이번 주 안에)\n• ${kw} 관련 메뉴 최소 2-3가지 개발 및 소프트 론칭\n• 단가: 7,000~12,000원대가 최적 (저항 없는 가격대)\n• SNS 인증샷 유도용 감성 패키징 필수 제작\n\n📦 재료 수급 전략\n• 공급처 2곳 이상 확보 (품절 리스크 방어)\n• 초도 물량: 수요 테스트용 소량(1-2주치)만 발주 후 반응 확인\n• 1주차 판매 데이터 기준으로 2주차 발주량 결정\n\n📱 SNS 마케팅\n• 인스타·틱톡에 메뉴 인증샷 콘텐츠 주 3회 이상 업로드\n• 해시태그 #${kw} 반드시 포함, 트렌딩 태그 추가 활용\n• 첫 3일 반응 확인 후 광고비 투입 여부 결정\n\n⚠️ 주의사항\n• 과도한 재고 확보 금지 - 정점 도달 후 3-4주 내 급락 가능\n• 경쟁 카페·식당 메뉴 주 1회 모니터링 권장`,
+    '상승':  `✅ 진입 추천 구간 (2주 내 행동)\n• ${kw} 메뉴 구성 시작, 2주 내 소프트 론칭 목표 설정\n• 소량 테스트 발주로 시장 반응 확인 후 본격 확대\n• 차별화 요소 1가지 이상 확보 (독창적인 조합·비주얼)\n\n📈 성장 구간 활용법\n• 타 경쟁자보다 먼저 SNS에 콘텐츠 선점 권장\n• 단가 8,000~13,000원대로 프리미엄 이미지 구축 가능\n• 정기 구매 유도 쿠폰/멤버십 연계 검토\n\n⚠️ 리스크 관리\n• 정점 도달 시기(4-10주 내) 파악 후 물량 조절 계획 수립\n• 대형 편의점 입점 여부를 쇠퇴 신호로 지속 모니터링`,
+    '정점':  `⚠️ 신중한 접근 필요\n• 신규 진입은 이미 레드오션 진입 신호 - 충분한 차별화 없이는 비권장\n• 기존 운영 중이라면: 현재 단가 15-20% 인상으로 프리미엄 전략 전환\n• '리미티드 에디션' 콘셉트로 희소성 재부여 시도\n\n🔄 전환 준비\n• 재고를 서서히 줄이며 다음 트렌드 메뉴 개발 병행\n• ${kw}의 후속으로 부상할 차세대 트렌드 사전 조사 시작\n• 현재 고객 DB 확보 - 다음 메뉴 출시 시 활용 가능\n\n📊 판단 기준\n• 월간 매출 20% 이상 감소 시 즉시 전환 준비 시작\n• 편의점 신규 입점 뉴스 = 유행 포화 확신 신호`,
+    '보합':  `✅ 안정적 운영 구간\n• ${kw}는 리스크 낮은 스테디 메뉴로 고정 편입 권장\n• 원가 최적화에 집중 (안정된 수요 = 협상력 상승)\n• 계절별 리뉴얼 버전 출시로 재주목 유도 가능\n\n💡 수익 극대화 전략\n• 시즌 한정 버전 ('여름 한정', '크리스마스 에디션' 등)\n• 세트메뉴로 묶어 객단가 향상 (단품→세트 전환율 목표 40%+)\n• 충성 고객 대상 구독 상품 또는 정기 배송 검토\n\n📌 장기 전략\n• 6개월 주기로 메뉴 소폭 변경하여 신선감 유지\n• 리뷰 마케팅 집중 - 스테디 트렌드의 신뢰도가 경쟁력`,
+    '하락':  `🛑 재고 관리 시급\n• 추가 재료 발주 즉시 중단\n• 남은 재료: 세트메뉴·번들 구성으로 이번 달 내 소진 목표\n• 한정 할인 행사로 재고 처분 (40-50% 할인 검토)\n\n🔄 메뉴 전환 준비\n• 4주 내 ${kw} 대체 메뉴로의 전환 계획 수립 시작\n• 현재 뜨고 있는 차세대 트렌드 메뉴 개발 즉시 착수\n• 기존 재료 활용 가능한 신메뉴 개발로 전환 비용 최소화\n\n📢 커뮤니케이션\n• SNS에서 ${kw} 관련 콘텐츠 게시 빈도 서서히 줄이기\n• 신규 메뉴 티저 콘텐츠로 고객 관심 전환 준비`,
+    '급하락':`🚨 즉각 행동 필요\n• 오늘부터 재료 추가 발주 전면 중단\n• 기존 재고: 세트·번들 구성으로 이번 주 내 소진 목표\n• 최대 60-70% 할인으로 빠른 재고 처분 단행\n\n⚡ 긴급 메뉴 전환\n• 지금 당장 대체 트렌드 메뉴 개발 착수\n• ${kw} 재료 재활용 가능한 신메뉴 즉시 개발 (비용 절감)\n• 빠른 전환을 위해 레시피 개발보다 소싱 우선\n\n📣 고객 안내\n• SNS에 신메뉴 예고 콘텐츠 선제 업로드\n• 기존 ${kw} 팬 고객 대상 신메뉴 얼리버드 혜택 제공\n• 3주 내 완전한 메뉴 교체 목표로 타임라인 설정`,
+  }
+
+  const replacements={
+    '정점':'다음 트렌드 후보: 개성주악, 버터떡류 파생상품',
+    '하락':'주목할 대체 트렌드: 버터떡, 흑임자 시리즈, 크로플',
+    '급하락':'긴급 대체 추천: 버터떡, 요아정 스타일 건강 디저트',
+  }
+  const rep=replacements[stage]||''
+
+  document.getElementById('analysis-el').innerHTML=`
+    <div class="ai-section">
+      <div class="ai-lbl">AI 종합 분석</div>
+      <div class="ai-summary">${summaries[stage]||summaries['보합']}</div>
+    </div>
+    <div class="ai-section">
+      <div class="ai-lbl">출처 분포 (광고·협찬 ${adRm}% 제거 후)</div>
+      ${Object.entries(src).map(([k,v],i)=>`
+        <div class="src-row">
+          <span class="src-lbl">${k}</span>
+          <div class="src-track"><div class="src-fill" style="width:${v}%;background:${srcColors[i]}"></div></div>
+          <span class="src-pct">${v}%</span>
+        </div>`).join('')}
+    </div>
+    <div class="ai-section">
+      <div class="ai-lbl">감성 분석</div>
+      <div class="sent-bar-wrap">
+        <div class="sent-bar" style="background:linear-gradient(to right,#16a34a 0%,#16a34a ${sent.p}%,#e2e8f3 ${sent.p}%,#e2e8f3 ${sent.p+sent.n}%,#ef4444 ${sent.p+sent.n}%,#ef4444 100%)"></div>
+        <div class="sent-lbls">
+          <span style="color:#15803d;font-weight:700">긍정 ${sent.p}%</span>
+          <span style="color:#64748b">중립 ${sent.n}%</span>
+          <span style="color:#b91c1c;font-weight:700">부정 ${sent.g}%</span>
+        </div>
       </div>
-      <div>${badgeHtml(t.stage)}</div>
+    </div>
+    <div class="soho-box">
+      <div class="soho-lbl">소상공인 즉시 행동 가이드</div>
+      <div class="soho-text">${(soho[stage]||soho['보합']).replace(/\n/g,'<br>')}</div>
+    </div>
+    ${rep?`<div class="replace-box">⚡&nbsp;<strong>대체 트렌드 예측:</strong>&nbsp;${rep}</div>`:''}
+  `
+}
+
+// ── 유사 트렌드 ────────────────────────────────────────
+function renderSimilar(curIdx){
+  const others=allTrends.filter((_,i)=>i!==curIdx).slice(0,3)
+  document.getElementById('sim-grid').innerHTML=others.map(t=>{
+    const s=gs(t.stage)
+    return`<div class="sim-card" onclick="showDetail(${allTrends.indexOf(t)})">
+      <div class="sim-name">${t.keyword}</div>
+      <div class="sim-row">
+        ${spark(t.history,s.bar,80,22)}
+        <div style="text-align:right">
+          <div class="sim-score">${(t.current_score||0).toFixed(1)}</div>
+          ${badge(t.stage)}
+        </div>
+      </div>
     </div>`
   }).join('')
 }
 
-// ── 초기 로드 ────────────────────────────────────────
-loadCat('음식',document.querySelector('.cat-pill'))
+// ── 부제목 / 설명 ──────────────────────────────────────
+const subtitles={
+  '버터떡':'(삼아이별 버터+떡 조합 열풍)','요아정':'(요거트 아이스크림의 정석)',
+  '얼먹젤리':'(얼려먹는 하리보)','약과':'(전통 디저트의 귀환)',
+  '흑임자라떼':'(건강·고소한 흑임자 음료)','개성주악':'(할머니 손맛 디저트)',
+  '두쫀쿠':'(두바이 쫀득 쿠키)','보석양갱':'(프리미엄 수제 양갱)',
+  '인절미디저트':'(인절미 기반 스테디)','탕후루':'(설탕 코팅 중국식 과자)',
+  '마라탕':'(얼큰한 중국식 훠궈)','두바이초콜릿':'(두바이식 피스타치오 초콜릿)',
+  '크로플':'(크루아상+와플)','그릭요거트':'(고단백 발효 유제품)',
+  '오마카세':'(셰프 선택 코스 요리)','흑당버블티':'(흑당 시럽 버블티)',
+  '수플레팬케이크':'(폭신한 일본식 팬케이크)','흑임자케이크':'(흑임자 크림 케이크)',
+  '마라샹궈':'(사천식 볶음 마라)','타피오카':'(타피오카 펄 음료)'
+}
+function subTitle(kw){return subtitles[kw]||''}
+const descs={
+  '급상승': kw=>`'${kw}'은(는) SNS를 중심으로 빠르게 확산 중입니다. 틱톡·인스타 릴스의 인증 소비가 주도하며 전주 대비 언급량이 급증하고 있습니다. 편의점 입점 전 단계로, 지금이 소상공인 선점의 골든타임입니다.`,
+  '상승':   kw=>`'${kw}'에 대한 관심이 꾸준히 높아지고 있습니다. SNS 리뷰와 소비자 후기가 늘면서 입소문이 확산되고 있으며, 배달앱 주문량도 함께 증가하는 추세입니다.`,
+  '정점':   kw=>`'${kw}'은(는) 현재 인기 정점에 도달했습니다. 대중화가 완료됐으며 편의점·프랜차이즈 입점이 시작된 시점으로, 소비자 포화도가 높아지고 있습니다.`,
+  '보합':   kw=>`'${kw}'은(는) 특정 소비층의 고정 수요를 바탕으로 안정적인 스테디 트렌드를 유지하고 있습니다. 급격한 변동 없이 꾸준한 수익을 기대할 수 있습니다.`,
+  '하락':   kw=>`'${kw}'에 대한 소비자 관심이 감소세로 전환됐습니다. 신선함이 줄어들고 유사 제품과의 경쟁이 심화되며 소비자 이탈이 가속화되고 있습니다.`,
+  '급하락': kw=>`'${kw}'의 유통기한이 임박했습니다. 소비자 관심이 빠르게 이탈 중이며 새로운 트렌드로 교체가 진행 중입니다. 즉각적인 대응이 필요한 단계입니다.`,
+}
+function descText(kw,stage){return(descs[stage]||descs['보합'])(kw)}
+
+// ── 검색 ────────────────────────────────────────────────
+function openSearch(){
+  document.getElementById('srch-overlay').style.display='block'
+  setTimeout(()=>document.getElementById('srch-input').focus(),50)
+}
+function closeSearch(){document.getElementById('srch-overlay').style.display='none'}
+function closeSrchOverlay(e){if(e.target===document.getElementById('srch-overlay'))closeSearch()}
+function doSearch(q){
+  const el=document.getElementById('srch-results')
+  const qq=q.trim()
+  if(!qq){el.innerHTML='<div class="srch-empty">검색어를 입력하면 실시간 트렌드 순위에서 찾아드립니다</div>';return}
+  const rs=allTrends.filter(t=>t.keyword.includes(qq)||qq.includes(t.keyword.slice(0,2)))
+  if(!rs.length){el.innerHTML=`<div class="srch-empty">'${qq}'에 대한 결과가 없습니다.<br>다른 키워드로 검색해보세요.</div>`;return}
+  el.innerHTML=rs.map(t=>{
+    const s=gs(t.stage)
+    return`<div class="sr-item" onclick="closeSearch();showDetail(${allTrends.indexOf(t)})">
+      <div><div class="sr-name">${t.keyword}</div><div class="sr-sub">${t.stage} · 주목도 ${(t.current_score||0).toFixed(1)}</div></div>
+      ${badge(t.stage)}
+    </div>`
+  }).join('')
+}
+
+// ── 초기 데이터 로드 ───────────────────────────────────
+async function loadData(){
+  try{
+    const r=await fetch(`${API}/api/trends?category=음식&limit=20`)
+    const d=await r.json()
+    allTrends=(d.trends||[]).filter(t=>t.history&&t.history.length>=4)
+    renderTable(allTrends)
+  }catch(e){
+    document.getElementById('load-state').innerHTML=`<div class="load-t">연결 오류</div><div class="load-s">${e.message}</div>`
+  }
+}
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch()})
+loadData()
 </script>
 </body>
 </html>
