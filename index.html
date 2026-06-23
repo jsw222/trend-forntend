@@ -145,7 +145,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);position:stick
 .ps-lbl{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.05em;margin-bottom:4px;text-transform:uppercase}
 .ps-val{font-size:15px;font-weight:800}
 .ps-sub{font-size:9px;color:var(--t3);margin-top:2px}
-.chart-box{position:relative;height:175px;margin-bottom:8px}
+.chart-box{position:relative;height:220px;margin-bottom:8px}
 .ch-legend{display:flex;gap:10px;flex-wrap:wrap}
 .leg{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t2)}
 .leg-line{width:16px;height:2px;border-radius:1px}
@@ -234,7 +234,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);position:stick
   .pred-stats{grid-template-columns:1fr 1fr}
   .sim-grid{grid-template-columns:1fr 1fr}
   .panel,.d-header,.sim-wrap{border-radius:14px;padding:15px}
-  .chart-box{height:150px}
+  .chart-box{height:180px}
 }
 
 @media(max-width:420px){
@@ -462,7 +462,7 @@ function renderTable(ts){
   const now=new Date()
   document.getElementById('date-lbl').textContent=`${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`
   document.getElementById('t-rows').innerHTML=ts.map((t,i)=>{
-    const s=gs(t.stage),r=remInfo(t.remain_weeks),sc=(t.current_score||0).toFixed(1)
+    const s=gs(t.stage),r=remInfo(t.remain_weeks),sc=(t.display_score??t.current_score??0).toFixed(1)
     // 각 열에 명시적 클래스 부여 → 모바일 CSS에서 정확하게 제어
     return`<div class="t-row" onclick="showDetail(${i})">
       <div class="col-rank t-rank ${t.rank<=3?'top':''}">${t.rank}</div>
@@ -475,7 +475,7 @@ function renderTable(ts){
       <div class="col-spark">${spark(t.history,s.bar)}</div>
       <div class="col-score">
         <div class="score-n">${sc}</div>
-        <div class="score-bar"><div class="score-fill" style="width:${Math.min(100,t.current_score||0)}%;background:${s.bar}"></div></div>
+        <div class="score-bar"><div class="score-fill" style="width:${Math.min(100,t.display_score??t.current_score??0)}%;background:${s.bar}"></div></div>
       </div>
       <div class="remain-val ${r.c}">${r.t}</div>
     </div>`
@@ -496,7 +496,7 @@ function showDetail(i){
   document.getElementById('d-subtitle').textContent=subOf(t.keyword)
   document.getElementById('d-desc').textContent=descOf(t.keyword,t.stage)
   document.getElementById('d-trail').innerHTML=trailOf(t.rank,t.stage)
-  document.getElementById('d-score').textContent=(t.current_score||0).toFixed(1)
+  document.getElementById('d-score').textContent=(t.display_score??t.current_score??0).toFixed(1)
   const ce=document.getElementById('d-chg');ce.textContent=chgStr;ce.className=`d-stat-val ${chgCls}`
   document.getElementById('d-men').textContent=mentions(t.keyword,t.current_score||50)
   const rem=t.remain_weeks
@@ -559,6 +559,23 @@ function renderChart(t,lc){
 }
 
 // ── 분석 패널 ────────────────────────────────────────────
+// 브랜드 전용 소상공인 조언
+function brandSoho(kw,stage){
+  const msgs={
+    '급상승':`✅ 트렌드 편승 전략<br>• ${kw}이(가) 주목받는 것은 <strong>요거트 아이스크림/건강 디저트 카테고리</strong> 자체가 뜨고 있다는 신호입니다.<br>• 직접 제조 가능한 유사 메뉴(직접 만드는 요거트 파르페, 과일 아이스크림 등)를 개발해 트렌드 수요를 흡수하세요.<br>• 가맹 브랜드와 직접 경쟁 대신 <strong>차별화된 DIY 버전</strong>이나 로컬 감성으로 포지셔닝하는 것이 유리합니다.<br><br>📌 카테고리 전략<br>• 해당 프랜차이즈가 없는 지역에서 선점 기회 가능<br>• 브랜드 가맹점 입점 비용 대비 자체 개발 메뉴 비교 검토 권장`,
+    '상승':`✅ 카테고리 성장 활용<br>• ${kw} 같은 건강 디저트 트렌드가 성장 중입니다. 유사 콘셉트 메뉴 개발로 수요를 흡수할 수 있는 시점입니다.<br>• 직접 만드는 요거트볼, 그릭요거트 파르페 등 DIY 메뉴로 차별화하세요.<br>• 단가 7,000~10,000원대의 건강 디저트 포지셔닝이 효과적입니다.`,
+    '정점':`⚠️ 카테고리 포화 주의<br>• 해당 브랜드가 대중화 정점에 도달했습니다. 카테고리 자체도 경쟁이 심해지는 시점입니다.<br>• 기존에 유사 메뉴를 운영 중이라면 프리미엄화(재료 업그레이드, 비주얼 차별화)를 권장합니다.<br>• 신규 진입보다 <strong>다음 트렌드 카테고리 탐색</strong>이 더 전략적입니다.`,
+    '하락':`🔄 카테고리 전환 검토<br>• ${kw}이(가) 하락세를 보이는 것은 이 카테고리의 소비자 피로도 증가 신호입니다.<br>• 유사 메뉴를 운영 중이라면 <strong>재료 재활용이 가능한 새로운 트렌드 메뉴</strong>로 전환을 준비하세요.<br>• 이 카테고리에서 다음으로 뜰 건강 디저트 트렌드 사전 파악이 중요합니다.`,
+    '급하락':`🚨 즉각 전환 필요<br>• ${kw} 카테고리의 유행이 급격히 식고 있습니다.<br>• 유사 메뉴의 재료 추가 발주를 중단하고 기존 재고를 세트·번들로 빠르게 소진하세요.<br>• 지금 뜨고 있는 다음 건강 디저트 트렌드로 즉각 전환하는 것이 필요합니다.`,
+    '보합':`📌 안정적 카테고리<br>• ${kw}이(가) 안정적인 인기를 유지하고 있습니다. 이 카테고리는 리스크 낮은 스테디 메뉴입니다.<br>• 직접 제조 가능한 유사 메뉴를 고정 메뉴로 편입하고, 계절 시즌 한정 버전으로 재주목을 유도하세요.`,
+  }
+  return msgs[stage]||msgs['보합']
+}
+
+// 브랜드/프랜차이즈 여부 감지
+const FRANCHISE_KW=new Set(["요아정","맘스터치","배스킨라빈스","투썸플레이스","스타벅스","이디야","빽다방","메가커피","컴포즈커피","노티드","크리스피크림"])
+function isFranchise(kw){return FRANCHISE_KW.has(kw)||kw.includes("의 정석")||kw.includes("정석")}
+
 function renderAnalysis(t,stage,chg){
   const kw=t.keyword
   const src={인스타그램:54,틱톡:23,커뮤니티:14,뉴스:9},srcC=['#4f46e5','#7c3aed','#a78bfa','#c4b5fd']
@@ -579,6 +596,8 @@ function renderAnalysis(t,stage,chg){
     '하락':`🛑 재고 관리 시급\n• 추가 재료 발주 즉시 중단\n• 남은 재료: 세트·번들로 이번 달 내 소진 목표\n• 한정 할인 행사 (40-50% 할인 검토)\n\n🔄 메뉴 전환\n• 4주 내 ${kw} 대체 메뉴 전환 계획 수립\n• 기존 재료 활용 가능한 신메뉴 개발로 전환 비용 최소화`,
     '급하락':`🚨 즉각 행동 필요\n• 오늘부터 재료 추가 발주 전면 중단\n• 기존 재고: 최대 60-70% 할인으로 빠른 소진\n• 세트·번들로 이번 주 내 소진 목표\n\n⚡ 긴급 메뉴 전환\n• 지금 당장 대체 트렌드 메뉴 개발 착수\n• ${kw} 재료 재활용 가능한 신메뉴 즉시 개발\n• 3주 내 완전한 메뉴 교체 목표`,
   }
+  // 브랜드면 다른 조언 적용
+  const isBrand=isFranchise(kw)
   const adRm=Math.round(29+(kw.charCodeAt(0)%16))
   const rep={정점:'다음 트렌드 후보: 개성주악·버터떡 파생상품',하락:'주목할 대체 트렌드: 버터떡·흑임자 시리즈',급하락:'긴급 대체 추천: 버터떡·요아정 스타일 건강 디저트'}[stage]||''
   document.getElementById('an-el').innerHTML=`
@@ -589,7 +608,7 @@ function renderAnalysis(t,stage,chg){
     <div style="margin:10px 0 4px"><span class="ai-lbl">감성 분석</span>
     <div class="sent-bar" style="background:linear-gradient(to right,#16a34a 0%,#16a34a ${sent.p}%,#e2e8f3 ${sent.p}%,#e2e8f3 ${sent.p+sent.n}%,#ef4444 ${sent.p+sent.n}%,#ef4444 100%)"></div>
     <div class="sent-lbls"><span style="color:#15803d;font-weight:700">긍정 ${sent.p}%</span><span style="color:#64748b">중립 ${sent.n}%</span><span style="color:#b91c1c;font-weight:700">부정 ${sent.g}%</span></div></div>
-    <div class="soho-box"><div class="soho-lbl">소상공인 즉시 행동 가이드</div><div class="soho-text">${(soho[stage]||soho['보합']).replace(/\n/g,'<br>')}</div></div>
+    <div class="soho-box"><div class="soho-lbl">소상공인 즉시 행동 가이드</div><div class="soho-text">${isBrand?brandSoho(kw,stage):(soho[stage]||soho['보합']).replace(/\n/g,'<br>')}</div></div>
     ${rep?`<div class="rep-box" style="margin-top:8px">⚡ <strong>대체 트렌드 예측:</strong> ${rep}</div>`:''}
   `
 }
